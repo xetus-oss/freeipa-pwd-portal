@@ -1,0 +1,16 @@
+.DS_Store
+.gradle
+.classpath
+.settings
+.project
+.idea
+.vagrant
+gulpw
+npm-debug.log
+/bin
+/build
+/bower_components
+/node_modules
+/devconfig
+/src/main/webapp/js/compiled
+/src/main/webapp/scss/compiled

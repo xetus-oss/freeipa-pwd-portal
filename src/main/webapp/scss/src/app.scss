@@ -1,0 +1,40 @@
+@import "foundation/functions",
+        "foundation/components/type",
+        "foundation/components/grid",
+        "foundation/components/forms";
+
+/*
+ * Variables
+ */
+ 
+$error: #8D1919;
+$success: #2E5C00;
+ 
+        
+/*
+ * Statements
+ */
+ 
+input[type='submit'] {
+	@extend a;
+	border: 0px;
+	background: 0px;
+	font-size: 1rem;
+	padding: 0;
+}
+
+form.ng-submitted input.ng-invalid {
+  border-color: $error;
+}
+
+.error {
+  color: $error;
+}
+
+.success {
+  color: $success;
+}
+
+[vc-recaptcha] > div > div {
+    margin: 1em auto;
+}
