@@ -1,5 +1,7 @@
 package com.xetus.freeipa.pwdportal
 
+import java.text.DateFormat
+import java.text.SimpleDateFormat
 import java.util.Properties
 
 import groovy.transform.CompileStatic
@@ -15,10 +17,12 @@ import javax.mail.internet.MimeMessage
 @CompileStatic
 class EmailUtility {
 
+  DateFormat df = new SimpleDateFormat()
   SiteConfig config
 
   EmailUtility(SiteConfig config) {
     this.config = config
+    this.df = new SimpleDateFormat(config.dateFormat)
   }
     
   Properties getProperties(EmailConfig mconfig) {
@@ -44,8 +48,8 @@ class EmailUtility {
       "requestId": request.requestId,
       "name": request.name,
       "requestIp": request.requestIp,
-      "requestDate": request.requestDate,
-      "expirationDate": request.expirationDate  
+      "requestDate": df.format(request.requestDate),
+      "expirationDate": df.format(request.expirationDate) 
     ]
     
     def subjectTmpl = engine
@@ -69,7 +73,7 @@ class EmailUtility {
     def engine = new groovy.text.SimpleTemplateEngine()
     def binding = [
       "name": name,
-      "date": date  
+      "date": df.format(date)  
     ]
     
     def subjectTmpl = engine

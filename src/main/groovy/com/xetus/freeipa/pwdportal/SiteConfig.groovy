@@ -58,6 +58,12 @@ class SiteConfig {
   int passwordResetRequestTimeLimit = (15 * 60)
   
   /**
+   * The date format to use when sending emails. Should be a
+   * pattern according to {@link java.text.SimpleDateFormat}
+   */
+  String dateFormat = "hh:mm a zzz 'on' MMMM dd yyyy"
+  
+  /**
    * The default {@link EmailConfig} object that will be merged against
    * all other email configuration objects using {@link 
    * EmailConfig#merge(EmailConfig)} when attempting to send emails. This
@@ -85,6 +91,8 @@ class SiteConfig {
    *      will follow to reset their password
    *      
    * </ul>
+   * 
+   * Note that dates are formatted according to the dateFormat configuration
    */
   EmailConfig passwordResetEmailConfig = new EmailConfig(
     subjectTemplate: "Free IPA Password Reset",
@@ -113,7 +121,7 @@ class SiteConfig {
     subjectTemplate: "Free IPA Password Change",
     messageTemplate: 'Dear $name,\n\n'
       + 'Your password was changed using the FreeIPA Password '
-      + 'portal on $date. Please contact a system administrator '
+      + 'portal at $date. Please contact a system administrator '
       + 'immediately if you did not change your password at this '
       + 'time.\n\n'
       + 'Sincerely,\n\nFree IPA Password Portal'

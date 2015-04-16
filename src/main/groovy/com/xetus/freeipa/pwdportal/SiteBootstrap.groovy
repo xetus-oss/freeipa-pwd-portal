@@ -3,7 +3,7 @@ package com.xetus.freeipa.pwdportal
 import javax.annotation.PostConstruct
 import javax.inject.Inject
 
-import org.slf4j.LoggerFactory;
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
 import ch.qos.logback.classic.LoggerContext
