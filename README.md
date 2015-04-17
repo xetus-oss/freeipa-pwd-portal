@@ -34,25 +34,26 @@ freeipaConfig {
 defaultEmailConfig {
   smtpHost = "smtp.example.com"
   smtpPort = "25"
-  fromAddress = "freeipa-pwd-portal@example.com"
+  smtpFrom = "freeipa-pwd-portal@example.com"
 }
 ```
 The following fields can be configured in the configuration file:
 
-* *externalConfigDir* - an absolute path pointing to a directory containing the siteconfig.groovy configruation file. This can be specified using the "com.xetus.freeipa-pwd-portal.config" environment variable
-* *recaptchaPrivateKey* - the Google ReCaptcha private key to use
-* *recaptchaPublicKey* - the Google ReCaptcha public key to use
-* *disableRecaptcha* - whether ReCaptcha should be disabled on the site
-* *freeipaConfig* - accepts a closure. See the [Iris github](https://github.com/xetus-oss/iris) for fields that can be configured
-* defaultEmailConfig - Accepts a closure. The general email configurations for the project from which all other email configurations will inherit. This is useful mainly for configuring a common SMTP host, port, fromAddress (and password, if applicable). Configurable fields: 
-* * *smtpHost*
-* * *smtpPort*
-* * *fromAddress*
-* * *password*
-* * *subjectTemplate*
-* * *messageTemplate* 
-* *passwordResetEmailConfig* - accepts a closure. Defines the email configurations for the email to send to users who request a password reset email, with the same available configurable fields as defaultEmailConfig. See the javadoc comments in SiteConfig for variables that are available in the subjectTemplate and messageTemplate bindings.
-* *passwordChangeEmailConfig* - accepts a closure. Defines the email configurations for the email to send to users when their password has been changed through the Free IPA Password Portal. Same avaialble configurable fields as the defaultEmailConfig and passwordResetEmailConfig, but with different bindings available; see the javadoc comments in Siteconfig for variables that are available in the subjectTemplate and messageTemplate bindings.
+* __externalConfigDir__: an absolute path pointing to a directory containing the siteconfig.groovy configruation file. This can be specified using the "com.xetus.freeipa-pwd-portal.config" environment variable.
+* __recaptchaPrivateKey__: the Google ReCaptcha private key to use.
+* __recaptchaPublicKey__: the Google ReCaptcha public key to use.
+* __disableRecaptcha__: whether ReCaptcha should be disabled on the site.
+* __freeipaConfig__: accepts a closure. See the [Iris github](https://github.com/xetus-oss/iris) for fields that can be configured.
+* __defaultEmailConfig__: Accepts a closure. The general email configurations for the project from which all other email configurations will inherit. This is useful mainly for configuring a common SMTP host, port, fromAddress (and password, if applicable). Configurable fields: 
+* * __smtpHost__: The SMTP host from which the emails should be sent.
+* * __smtpPort__: The port through which to connect to the SMTP host.
+* * __smtpFrom__: The address from which the emails should be sent.
+* * __smtpUser__: The username with which to authenticate against the SMTP host. Optional; the value for smtpFrom will be used if smtpPass is specified and no smtpUser is specified.
+* * __smtpPass__: The password with which to authenticate against the SMTP host. If not specified, authentication will not be attempted against the SMTP host.
+* * __subjectTemplate__: The template to use for generating the subject for the email. Other than being inherited by the _passwordResetEmailConfig_ and _passwordChangeEmailConfig_ options if they don't define a value this should have no effect when specified for the _defaultEmailConfig_.
+* * __messageTemplate__: The template to use for generating the subject for the email. Other than being inherited by the _passwordResetEmailConfig_ and _passwordChangeEmailConfig_ options if they don't define a value this should have no effect when specified for the _defaultEmailConfig_.
+* __passwordResetEmailConfig__: accepts a closure. Defines the email configurations for the email to send to users who request a password reset email, with the same available configurable fields as defaultEmailConfig. See the javadoc comments in SiteConfig for variables that are available in the subjectTemplate and messageTemplate bindings.
+* __passwordChangeEmailConfig__: accepts a closure. Defines the email configurations for the email to send to users when their password has been changed through the Free IPA Password Portal. Same avaialble configurable fields as the defaultEmailConfig and passwordResetEmailConfig, but with different bindings available; see the javadoc comments in Siteconfig for variables that are available in the subjectTemplate and messageTemplate bindings.
 
 ### Authentication
 Two authentication mechanisms are used to interact with the Free IPA instance's JSON RPC API: user credentials, in the case of a password change, and Kerberos authentication using a host account. Both authentication mechanisms require a valid Kerberos configuration on the host system. Because authentication is really handled by the [Iris library](https://github.com/xetus-oss/iris), please visit the [Iris github](https://github.com/xetus-oss/iris) for details on properly configuring JAAS and Kerberos on the host system. Iris configurations are consumed by the Free IPA Password Portal using the FreeIPA Password Portal's freeipaConfig configuration value.

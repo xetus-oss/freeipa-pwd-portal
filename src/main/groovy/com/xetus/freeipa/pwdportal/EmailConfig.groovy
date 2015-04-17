@@ -21,13 +21,22 @@ class EmailConfig {
   /**
    * The email address from which the email should be sent.
    */
-  String fromAddress
+  String smtpFrom
   
   /**
-   * The password for the email address from which the email should
-   * be sent. No password is used if this is unspecified.
+   * The username that should be used to authenticate with the SMTP
+   * host. If neither this nor {@link #smtpPass} are specified, 
+   * Authentication is not used. If smtpUser is not specified but
+   * smtpPass is, {@link #smtpUser} will be attempted as the user
+   * name.
    */
-  String password
+  String smtpUser
+  
+  /**
+   * The smtpPass for the email address from which the email should
+   * be sent. Authentication is not used if this is unspecified.
+   */
+  String smtpPass
   
   /**
    * The subject template to use for generating the email. This 
@@ -53,8 +62,8 @@ class EmailConfig {
    * Merges any unconfigured values in this {@link EmailConfig} with
    * the passed {@link EmailConfig}. This is mostly a utility method
    * to facilitate merging typical shared configurations (such as {@link 
-   * #smtpHost}, {@link #smtpPort}, {@link #fromAddress}, and {@link 
-   * #password}) into specific email message templates.
+   * #smtpHost}, {@link #smtpPort}, {@link #smtpFrom}, and {@link 
+   * #smtpPass}) into specific email message templates.
    *  
    * @param other
    * @return the {@link EmailConfig} object after merging the other's
@@ -63,8 +72,8 @@ class EmailConfig {
   EmailConfig merge(EmailConfig other) {
     smtpHost = (smtpHost) ?: other.smtpHost
     smtpPort = (smtpPort) ?: other.smtpPort
-    fromAddress = (fromAddress) ?: other.fromAddress
-    password = (password) ?: other.password
+    smtpFrom = (smtpFrom) ?: other.smtpFrom
+    smtpPass = (smtpPass) ?: other.smtpPass
     subjectTemplate = (subjectTemplate) ?: other.subjectTemplate
     messageTemplate = (messageTemplate) ?: other.messageTemplate
     this

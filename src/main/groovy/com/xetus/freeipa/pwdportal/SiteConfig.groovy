@@ -73,7 +73,7 @@ class SiteConfig {
   EmailConfig defaultEmailConfig = new EmailConfig(
     smtpHost: "localhost",
     smtpPort: "25",
-    fromAddress: "freeipa-pwd-portal@example.com"
+    smtpFrom: "freeipa-pwd-portal@example.com"
   )
   
   /**

@@ -8,6 +8,7 @@ import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 
 import javax.inject.Inject
+import javax.mail.PasswordAuthentication
 import javax.mail.Session
 import javax.mail.Transport
 import javax.mail.internet.InternetAddress
@@ -25,18 +26,27 @@ class EmailUtility {
     this.df = new SimpleDateFormat(config.dateFormat)
   }
     
-  Properties getProperties(EmailConfig mconfig) {
+  Session getSession(EmailConfig mconfig) {
     Properties props = new Properties()
     props.setProperty("mail.transport.protocol","smtp");
     props.setProperty("mail.smtp.host", mconfig.smtpHost)
     props.setProperty("mail.smtp.port", mconfig.smtpPort)
-    props.setProperty("mail.smtp.from", mconfig.fromAddress)
+    props.setProperty("mail.smtp.from", mconfig.smtpFrom)
     
-    if (mconfig.password != null) {
-      props.setProperty("mail.smtp.password", mconfig.password)
+    if (mconfig.smtpPass == null) {
+      return Session.getDefaultInstance(props)
     }
     
-    props
+    props.setProperty("mail.smtp.auth", "true")
+    props.put("mail.smtp.starttls.enable", "true");
+    return Session.getInstance(props,
+      new javax.mail.Authenticator() {
+        PasswordAuthentication getPasswordAuthentication() {
+          return new PasswordAuthentication(
+            mconfig.smtpUser ?: mconfig.smtpFrom, mconfig.smtpPass);
+        }
+      }
+    )
   }
   
   void emailPasswordResetUrl(String email, 
@@ -61,10 +71,8 @@ class EmailUtility {
       .make(binding)
       
     config.passwordResetEmailConfig.merge(config.defaultEmailConfig)
-    sendMessage(getProperties(config.passwordResetEmailConfig),
+    sendMessage(config.passwordResetEmailConfig,
                 email,
-                config.passwordResetEmailConfig.fromAddress,
-                config.passwordResetEmailConfig.password,
                 subjectTmpl?.toString(),
                 messageTmpl?.toString())
   }
@@ -85,32 +93,28 @@ class EmailUtility {
       .make(binding)
       
     config.passwordChangeEmailConfig.merge(config.defaultEmailConfig)
-    sendMessage(getProperties(config.passwordChangeEmailConfig),
+    sendMessage(config.passwordChangeEmailConfig,
                 email,
-                config.passwordChangeEmailConfig.fromAddress,
-                config.passwordChangeEmailConfig.password,
                 subjectTmpl?.toString(),
                 messageTmpl?.toString())
   }
   
-  void sendMessage(Properties props, String to, String from,
-                   String password, String subject, String message) {
+  void sendMessage(EmailConfig mconfig, String to, 
+                  String subject, String message) {
     log.debug("Sending message:\n"
             + "to: $to,\n"
-            + "from: $from,\n"
+            + "from: $mconfig.smtpFrom,\n"
             + "subject: $subject,\n"
             + "message: $message\n")
     
-    Session lSession = Session.getDefaultInstance(props,null);
-    MimeMessage msg = new MimeMessage(lSession);
+    Session lSession = getSession(mconfig)
+    MimeMessage msg = new MimeMessage(lSession)
     
     msg.setRecipients(MimeMessage.RecipientType.TO, new InternetAddress(to))
-    msg.setFrom(new InternetAddress(from));
+    msg.setFrom(new InternetAddress(mconfig.smtpFrom))
     msg.setSubject(subject);
     msg.setText(message)
     
-    Transport transporter = lSession.getTransport("smtp");
-    transporter.connect(null, from, password);
-    transporter.send(msg);
+    Transport.send(msg)
   }
 }
