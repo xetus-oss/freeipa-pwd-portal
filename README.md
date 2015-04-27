@@ -27,9 +27,9 @@ The following steps should be taken on the FreeIPA instance with which the freei
 	
 5. All FreeIPA versions since 2.2 [restrict non-admin users from changing admin passwords](https://fedorahosted.org/freeipa/ticket/2271). To allow the freeipa-pwd-portal to reset admin passwords against accounts in FreeIPA versions greater than this:
 
-	a. Create a `host group` in the FreeIPA instance with the name `pw-reset-portal` and add the freeipa-pwd-portal.example.com host you created in step 2 above as a member
-	b. Apply the following ldif to the LDAP directory, modifying all instances of `dc=example,dc=com` to match your basedn:
-	
+	1. Create a `host group` in the FreeIPA instance with the name `pw-reset-portal` and add the freeipa-pwd-portal.example.com host you created in step 2 above as a member
+	2. Apply the following ldif to the LDAP directory, modifying all instances of `dc=example,dc=com` to match your basedn:
+		
 		```
 		# Add the ability to change passwords for all accounts (including) admins
 		# using this host account
@@ -38,10 +38,10 @@ The following steps should be taken on the FreeIPA instance with which the freei
 		add: aci
 		aci: (targetattr = "userPassword || krbPrincipalKey || sambaLMPassword || sambaNTPassword || passwordHistory || ipaNTHash")(version 3.0; acl "PWD Portal can write passwords"; allow (add,delete,write) groupdn="ldap:///cn=pw-reset-portal,cn=hostgroups,cn=accounts,dc=example,dc=com";)
 		```
-
-		After creating a file called freeipa-pwd-portal.ldif from the above ldif in your current working directory, an example of the command to run from the FreeIPA server might be:
 		
-		```
+	3. After creating a file called freeipa-pwd-portal.ldif from the above ldif in your current working directory, an example of the command to run from the FreeIPA server might be:
+		
+		```bash
 		ldapmodify -h freeipa.example.com -x -W \
 		  -p 389 \
 		  -D "cn=Directory Manager" \
@@ -70,7 +70,7 @@ The following steps should be taken on the host system that will run the freeipa
 
 1. Modify the following freeipa-pwd-portal siteconfig template as necessary and place the contents in `/etc/freeipa-pwd-portal/siteconig.groovy` (see #configuration for details):
 
-	```
+	```groovy
 	recaptchaPrivateKey = "GOOGLE_RECAPTCHA_PRIVATE_KEY"
 	recaptchaPublicKey = "GOOGLE_RECAPTCHA_PUBLIC_KEY"
 	disableRecaptcha = false
@@ -95,7 +95,7 @@ The following steps should be taken on the host system that will run the freeipa
 
 2. Modify the following logging configuration to your preference and place the result in `/etc/freeipa-pwd-portal/logback.groovy`:
 
-	```
+	```groovy
 	import ch.qos.logback.classic.encoder.PatternLayoutEncoder
 	import ch.qos.logback.core.rolling.FixedWindowRollingPolicy
 	import ch.qos.logback.core.rolling.RollingFileAppender
@@ -126,7 +126,7 @@ The following steps should be taken on the host system that will run the freeipa
 
 3. Modify the following krb5 config template as necessary and place the contents in `/etc/iris/krb5.conf` (see [iris](https://github.com/xetus-oss/iris) for details):
 
-	```
+	```ini
 	[logging]
 	 default = FILE:var/logs/krb5.log
 	
@@ -165,7 +165,7 @@ The following steps should be taken on the host system that will run the freeipa
 
 6. Start the server on port 443 by running the following command, replacing `$KEYSTORE_PATH`, `$CERT_ALIAS` and `$STORE_AND_CERT_PASS` as necessary. Note that currently the webapp must be run through https:
 
-	```
+	```bash
 	java -jar freeipa-pwd-portal-1.0-SNAPSHOT.war \
       -p 443 \
       -kf "$KEYSTORE_PATH" \
