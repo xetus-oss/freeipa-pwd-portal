@@ -218,8 +218,8 @@ In order to communicate with the Free IPA instance, the freeipa-pwd-portal uses 
 2. Kerberos Authentication (Password Reset)
 
 	Because the user is unable to authenticate (due to an expired or forgotten password), the freeipa-pwd-portal:
-	a. uses it's Kerberos principal (with _User Administration_ privileges) to retrieve the email corresponding to the supplied username
-	b. emails a secure password-reset link to the email that's valid for 15 minutes (configurable)
-	c. waits until it receives a request with the valid session ID a new password, then changes the user's password to a random value, authenticates as the user, and changes the user's password to the supplied new password as the user.
+	1. uses it's Kerberos principal (with _User Administration_ privileges) to retrieve the email corresponding to the supplied username
+	2. emails a secure password-reset link to the email (the password-reset link is valid for a configurable 15 minute window)
+	3. waits until it receives a request with the valid password-reset ID and a new password to: change the user's password to a secure, randomly generated value; authenticate as the user using the random value; and changes the user's password (as the now-authenticated user) to the supplied new password.
 
 Both authentication mechanisms require a valid Kerberos configuration on the host system. Because authentication is really handled by the [iris library](https://github.com/xetus-oss/iris), please visit that project for more details on configuring JAAS and Kerberos on the host system. Iris configurations are configured using the `freeipaConfig` configuration object.
