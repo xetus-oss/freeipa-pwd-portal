@@ -201,6 +201,7 @@ Configuration for the site is executed using a groovy configuration file. The fo
 * * __messageTemplate__: The template to use for generating the subject for the email. Other than being inherited by the _passwordResetEmailConfig_ and _passwordChangeEmailConfig_ options if they don't define a value this should have no effect when specified for the _defaultEmailConfig_.
 * __passwordResetEmailConfig__: accepts a closure. Defines the email configurations for the email to send to users who request a password reset email, with the same available configurable fields as defaultEmailConfig. See the javadoc comments in SiteConfig for variables that are available in the subjectTemplate and messageTemplate bindings.
 * __passwordChangeEmailConfig__: accepts a closure. Defines the email configurations for the email to send to users when their password has been changed through the Free IPA Password Portal. Same avaialble configurable fields as the defaultEmailConfig and passwordResetEmailConfig, but with different bindings available; see the javadoc comments in Siteconfig for variables that are available in the subjectTemplate and messageTemplate bindings.
+* __xForwardedForHeader__: The key for the request header from which to extract the remote user's IP, in the event the password portal is being served from behind a proxy. If no header is found, the value for request.getRemoteAddr() will be used instead (for Google Recpatcha). Defaults to "X-Forwarded-To".
 
 #### Kerberos (krb5.conf and jaas.conf)
 

@@ -31,6 +31,13 @@ class SiteConfig {
   String recaptchaPublicKey = null
   
   /**
+   * The key for the request header from which to extract the remote 
+   * user's IP if the password portal is being served from behind a 
+   * proxy.
+   */
+  String xForwardedForHeader = "X-Forwarded-For"
+  
+  /**
    * If true indicates recaptcha should be disabled for the whole site
    * regardless of whether {@link #recaptchaPrivateKey} and 
    * {@link #recaptchaPublicKey} are specified.

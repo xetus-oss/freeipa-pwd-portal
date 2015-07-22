@@ -101,6 +101,18 @@ class FreeIPARestService {
       .get(AbstractHTTPDestination.HTTP_REQUEST)
   }
   
+  String getRemoteIp() {
+    def request = getRequest()
+    
+    String remoteIp = request.getRemoteAddr()
+    String xForwardedForValue = request.getHeader(config.xForwardedForHeader)
+    if (xForwardedForValue) {
+        remoteIp = xForwardedForValue.split(',')[0]?.trim()
+    }
+    
+    return remoteIp
+  }
+  
   /**
    * Returns a boolean indicating whether the passed ReCaptcha response 
    * is valid.
@@ -118,8 +130,7 @@ class FreeIPARestService {
     
     RecaptchaResponse reCaptchaResponse = null
     try {
-      reCaptchaResponse = recaptcha.verify(response, 
-                                           getRequest().getRemoteAddr())
+      reCaptchaResponse = recaptcha.verify(response, getRemoteIp())
     } catch(e) {
       log.error "Exception raised while consuming verification API", e
       return false
@@ -286,7 +297,7 @@ class FreeIPARestService {
        requestId: generateRandomRid(),
        name: user,
        email: email,
-       requestIp: getRequest().getRemoteAddr(),
+       requestIp: getRemoteIp(),
        requestDate: now,
        expirationDate: expirationDate
      )
