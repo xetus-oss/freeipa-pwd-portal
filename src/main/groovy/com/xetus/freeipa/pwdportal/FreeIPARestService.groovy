@@ -1,37 +1,35 @@
 package com.xetus.freeipa.pwdportal
 
+import groovy.time.TimeCategory
+import groovy.time.TimeDuration
+import groovy.transform.CompileStatic
+import groovy.util.logging.Slf4j
+
 import java.security.SecureRandom
 
 import javax.annotation.PostConstruct
 import javax.inject.Inject
-import javax.servlet.http.Cookie
 import javax.servlet.http.HttpServletRequest
-import javax.ws.rs.Consumes
 import javax.ws.rs.FormParam
 import javax.ws.rs.POST
 import javax.ws.rs.Path
 import javax.ws.rs.Produces
-import javax.ws.rs.core.Context
 
 import org.apache.cxf.message.Message
 import org.apache.cxf.phase.PhaseInterceptorChain
 import org.apache.cxf.transport.http.AbstractHTTPDestination
 
+import com.xetus.freeipa.pwdportal.model.PwPortalUser
+import com.xetus.freeipa.pwdportal.recaptcha.RecaptchaClient
+import com.xetus.freeipa.pwdportal.recaptcha.RecaptchaResponse
+
 import com.xetus.iris.FreeIPAAuthenticationManager
 import com.xetus.iris.FreeIPAClient
-import com.xetus.iris.FreeIPAConfig
 import com.xetus.iris.InvalidPasswordException
 import com.xetus.iris.InvalidUserOrRealmException
 import com.xetus.iris.PasswordExpiredException
 import com.xetus.iris.PasswordPolicyViolationException
-import com.xetus.iris.RPCResult
-import com.xetus.freeipa.pwdportal.recaptcha.RecaptchaClient
-import com.xetus.freeipa.pwdportal.recaptcha.RecaptchaResponse
-
-import groovy.time.TimeCategory
-import groovy.time.TimeDuration
-import groovy.transform.CompileStatic
-import groovy.util.logging.Slf4j
+import com.xetus.iris.model.RPCResponse
 
 /**
  * The JAX-RS endpoints. Currently contains the following endpoints:<ul>
@@ -205,19 +203,13 @@ class FreeIPARestService {
       FreeIPAClient client = mgr.resetPassword(username, password, newPass)
       log.info "User $username successfully changed password"
       
-      RPCResult r = client.userFind([], [uid: username])
-      List<Map> results = (List<Map>) r.result
+      RPCResponse<List<PwPortalUser>> r = (RPCResponse<List<PwPortalUser>>) client
+          .userFind([], [uid: username])
+      
+      List<PwPortalUser> results = r.getResult() 
       if (results && results.size() > 0) {
-        
-        Map userMap = results[0]
-        
-        String email = userMap['mail']
-        if (userMap["mail"] != null) {
-          if (userMap["mail"] instanceof List) {
-            email = ((List) userMap["mail"])[0]
-          }
-        }
-        
+        PwPortalUser user = results[0]
+        String email = user.email
         if (email) {
           log.trace "Located user $username's email: $email"
           smtp.emailPasswordChangeNotification(
@@ -271,20 +263,17 @@ class FreeIPARestService {
    
    try {
      FreeIPAClient client = mgr.getKerberosClient()
-     RPCResult r = client.userFind([], [uid: user])
+     RPCResponse<List<PwPortalUser>> r = (RPCResponse<List<PwPortalUser>>) client
+         .userFind([], [uid: user])
      
-     List<Map> results = (List<Map>) r.result
+     List<PwPortalUser> results = r.result
      if (!results || results.size() < 1) {
        return new Response(INVALID_CREDENTIALS_ERROR)
      }
      
-     Map userMap = results[0]
-     String email = userMap['mail']
-     if (userMap["mail"] != null) {
-       if (userMap["mail"] instanceof List) {
-         email = ((List) userMap["mail"])[0]
-       }
-     } else {
+     PwPortalUser foundUser = results[0]
+     String email = foundUser.email
+     if (email == null) {
        return new Response(NO_EMAIL_ERROR)
      }
      

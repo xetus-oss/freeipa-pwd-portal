@@ -3,7 +3,9 @@ package com.xetus.freeipa.pwdportal
 import groovy.transform.CompileStatic
 import groovy.transform.ToString
 
+import com.xetus.freeipa.pwdportal.model.PwPortalUser
 import com.xetus.iris.FreeIPAConfig
+import com.xetus.iris.model.DefaultFreeIPAResponseModelTypeFactory
 
 @ToString(includeNames = true)
 @CompileStatic
@@ -55,7 +57,9 @@ class SiteConfig {
   }
   
   FreeIPAConfig freeipaConfig = new FreeIPAConfig(
-    jaasConfigPath: FreeIPAConfig.class.getResource("/jaas.conf").file
+    jaasConfigPath: FreeIPAConfig.class.getResource("/jaas.conf").file,
+    typeFactory: new DefaultFreeIPAResponseModelTypeFactory()
+                  .registerUserClass(PwPortalUser.class)
   )
   
   /**
