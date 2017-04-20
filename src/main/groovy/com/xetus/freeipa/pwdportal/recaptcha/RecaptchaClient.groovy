@@ -27,9 +27,11 @@ class RecaptchaClient {
     "https://www.google.com/recaptcha/api/siteverify"
 
   String privateKey
+  ObjectMapper om
   
   RecaptchaClient(String key) {
     this.privateKey = key
+    this.om = new ObjectMapper();
   }
   
   String toParams(String response, String remoteIp) {
@@ -77,7 +79,7 @@ class RecaptchaClient {
       
       log.debug "Received JSON from Google: $json"
       
-      return new ObjectMapper().readValue(json, RecaptchaResponse.class)
+      return this.om.readValue(json, RecaptchaResponse.class)
       
     } finally {
       if (con != null) {
