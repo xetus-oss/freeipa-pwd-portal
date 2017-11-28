@@ -8,6 +8,7 @@ yarn-error.log*
 /test/e2e/reports/
 selenium-debug.log
 /config/dev.override.json
+/config/container.override.json
 /config/log4js.json
 
 # Editor directories and files
