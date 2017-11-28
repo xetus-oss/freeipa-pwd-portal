@@ -18,14 +18,56 @@ task setup(dependsOn: ['nodeSetup', 'npmInstall']) {
   description = "Downloads and installs a local versions of Node and NPM and installs all client dependencies"
 }
 
-task runClient(type: NpmTask) {
+task run(type: NpmTask) {
   group = "application"
   description = "Runs the UI server and client with live reload on changes to both UI server and UI client code. Use the port specified in the line \"Development server is listening [port ...]\"."
   args = ['start']
 }
 
-task buildUiClient(dependsOn: ['setup'], type: NpmTask) {
+task build(dependsOn: ['setup'], type: NpmTask) {
   group = "build"
-  description = "Builds the static Angular2 app assets for deployment"
-  args = ['run', 'build-client']
+  description = "Builds the static Vue assets and server for deployment"
+  args = ['run', 'build']
 }
+
+task buildDockerDependencies(dependsOn: ['build'],
+                             type: Copy) {
+  group = "build"
+  description = "Prepares all of dependencies required to build the Docker image"
+  def dockerBuildDir = "build/docker/";
+  new File(dockerBuildDir).mkdir()
+
+  from "package.json"
+  into "$dockerBuildDir/package.json"
+
+  from "dist/"
+  into "$dockerBuildDir/"
+
+  from "src/docker/"
+  into "$dockerBuildDir/"
+}
+
+import com.bmuschko.gradle.docker.tasks.container.*
+import com.bmuschko.gradle.docker.tasks.image.*
+
+ /*
+  * Builds a new copy of the docker image and publishes it to the local repository
+  */
+ task buildDockerImage(type: DockerBuildImage) {
+   dependsOn "buildDockerDependencies"
+   group "Build"
+   description "Builds a Docker image for the UI project"
+   inputDir file("${projectDir}/build/docker")
+   dockerFile file("${projectDir}/build/docker/Dockerfile")
+   imageId "xetusoss/freeipa-pwd-portal-ui"
+   tag  "xetusoss/freeipa-pwd-portal-ui:latest"
+ }
+
+ task tagDockerImage(type: DockerTagImage) {
+   dependsOn "buildDockerImage"
+   group "Publishing"
+   description "Publishes the built docker image"
+   imageId = "xetusoss/freeipa-pwd-portal-ui:latest"
+   tag = "latest"
+   repository = "xetusoss/freeipa-pwd-portal-ui"
+ }
