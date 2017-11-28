@@ -9,14 +9,23 @@ truststore="server/config/pw-portal.keystore"
 usage() 
 {
   echo "usage: create_freeipa_truststore [-a alias] [-s server] [-p pem_path] [-t truststore] [-rm]"
+  echo
+  echo " -a | --alias       the alias with which the certificate should be stored"
+  echo " -s | --server      the FreeIPA server"
+  echo " -p | --pem-path    the path to which the certificate should be saved"
+  echo " -t | --truststore  the output path for the generated java truststore"
+  echo " -h | --help        show this helpful help message and exit"
+  echo  
 }
+
+[[ "$1" == *-h* ]] && usage && exit
 
 while [ "$1" != "" ]; do
   case $1 in
     -a | --alias)           shift
                             alias_path=$1
                             ;; 
-    -p | --pem_path)        shift
+    -p | --pem-path)        shift
                             pem_path=$1
                             ;; 
     -s | --server )         shift
@@ -46,7 +55,11 @@ openssl s_client -showcerts \
                  < /dev/null 2> /dev/null \
         | openssl x509 -outform PEM > $pem_path
 
-[[ "$?" -ne 0 ]] && echo "\nfailed to download the certificate from $server" && exit $?
+[[ "$?" -ne 0 ]] && \
+    echo "" && \
+    echo "failed to download the certificate from $server" && \
+    echo "" && \
+    exit $?
 
 keytool -import -trustcacerts -noprompt \
         -alias $alias \
@@ -54,7 +67,11 @@ keytool -import -trustcacerts -noprompt \
         -keystore $truststore \
         -storepass changeit
 
-[[ "$?" -ne 0 ]] && echo "\nfailed to import the keytool into the keystore" && exit $?
+[[ "$?" -ne 0 ]] && \
+    echo "" && \
+    echo "failed to import the certificate into the keystore" && \
+    echo "" && \
+    exit $?
 
 echo "added cert for $server to $truststore"
 echo

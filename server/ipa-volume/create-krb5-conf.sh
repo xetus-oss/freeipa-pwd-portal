@@ -7,7 +7,15 @@ config="krb5.conf"
 usage() 
 {
   echo "usage: create_krb5_conf [-s server] [-r realm] [-c krb5.conf]"
+  echo
+  echo " -s | --server      the FreeIPA server"
+  echo " -r | --realm       the realm to which the password portal should be added"
+  echo " -c | --config      the path where the krb5 config should be created"
+  echo " -h | --help        show this helpful help message and exit"
+  echo  
 }
+
+[[ "$1" == *-h* ]] && usage && exit
 
 while [ "$2" != "" ]; do
   case $1 in

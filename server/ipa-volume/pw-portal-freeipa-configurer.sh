@@ -12,8 +12,20 @@ dn="dc=local,dc=xetus,dc=com"
 
 usage() 
 {
-  echo "usage: create_krb5_conf [-s server] [-r realm] [-h host_name] [-ip host_ip] [-t truststore] [-krb krb5.conf] [-k keytab] admin_pass"
+  echo "usage: pw-portal-freeipa-configurer [-s server] [-r realm] [-h host_name] [-ip host_ip] [-t truststore] [-krb krb5.conf] [-k keytab] admin_pass"
+  echo
+  echo " -s | --server      the FreeIPA server"
+  echo " -r | --realm       the realm to which the password portal should be added"
+  echo " -h | --host_name   the host name for the passord portal"
+  echo " -p | --host_ip     the password portal's host ip"
+  echo " -t | --truststore  the output path for the generated java truststore"
+  echo " -krb | --krb5-conf the output path for the generated krb5.conf"
+  echo " -dn                the LDAP dn for the FreeIPA instance"
+  echo " -h | --help        show this helpful help message and exit"
+  echo  
 }
+
+[[ "$1" == *-h* ]] && usage && exit
 
 while [ "$2" != "" ]; do
   case $1 in
@@ -58,7 +70,11 @@ echo "Performing kinit as admin..."
 echo 
 echo "$admin_pass" | kinit admin
 
-[[ "$?" -ne 0 ]] && echo "\nfailed to kinit as admin; is your password correct?" && exit $?
+[[ "$?" -ne 0 ]] && \
+  echo "" && \
+  echo "failed to kinit as admin; is your password correct?" && \
+  echo "" && \
+  exit $?
 
 #
 # Create the host with the required role and service
@@ -106,11 +122,11 @@ echo "$admin_pass" | ldapmodify -h $server -x -W \
                                 -f pw-reset-portal.hostgroup.ldif
 
 script_prefix="."
-[[ ! -f create_freeipa_truststore.sh ]] && script_prefix="${BASH_SOURCE%/*}"
+[[ ! -f create-freeipa-truststore.sh ]] && script_prefix="${BASH_SOURCE%/*}"
 
-bash "$script_prefix"/create_freeipa_truststore.sh -s $server -t $truststore
+bash "$script_prefix"/create-freeipa-truststore.sh -s $server -t $truststore
 
-bash "$script_prefix"/create_krb5_conf.sh -s $server -r $realm -c $krb5_config
+bash "$script_prefix"/create-krb5-conf.sh -s $server -r $realm -c $krb5_config
 
 echo
 echo "Done!"
