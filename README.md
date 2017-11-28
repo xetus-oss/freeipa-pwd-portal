@@ -1,14 +1,14 @@
 # freeipa-pwd-portal
 
-
-
-## Quick Start
+A self-service password reset portal for FreeIPA that allows FreeIPA users 
+to change and reset their passwords without accessing the FreeIPA instance 
+directly.
 
 |CAUTION|
 |--------|
 |The [Iris dependency](https://github.com/xetus-oss/iris) has not yet been published to a Maven repository. You may need to download and install it in your local Maven repository before building and/or running the Free IPA password portal locally.|
 
-### Pre-Requisites
+## Quick Start
 
 The quick start requires docker engine and docker-compose. Please note that
 the compose file uses `privileged=true` in order to run on mac osx.
