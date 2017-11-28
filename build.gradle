@@ -30,6 +30,9 @@ allprojects {
     }
   }
   
+  group = 'com.xetus.oss.freeipa-pwd-portal'
+  version = '1.0.0-SNAPSHOT'
+  
   eclipse {
     classpath {
       downloadSources = true
