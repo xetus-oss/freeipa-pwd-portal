@@ -1,0 +1,28 @@
+recaptcha:
+  validation:
+    secret-key: "your-recaptcha-secret-key"
+
+pwd-portal:
+  disableRecaptcha: false
+
+iris:
+  hostname: freeipa.local.xetus.com
+  realm: LOCAL.XETUS.COM
+  keytabPath: config/pw-portal.local.xetus.com.keytab
+  principal: host/pw-portal.local.xetus.com@LOCAL.XETUS.COM
+  krb5ConfigPath: config/krb5.conf
+
+notifications:
+  webUri: http://localhost:8080
+  smtpHost: 127.0.0.1
+  smtpPort: 1025
+
+server.port: 8081
+
+# CORS configuration
+endpoints:
+  cors:
+    allowed-origins: http://localhost:8080
+
+logging.level:
+  com.xetus: 'INFO'

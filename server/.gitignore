@@ -2,5 +2,5 @@
 /bin/
 .classpath
 .groovy
-config/
-!config/application-dev.example.yml
+/config/*
+!/config/application-dev.example.yml
