@@ -23,13 +23,13 @@ docker-compose up -d
 docker-compose logs -f
 ```
 
-### 2. Make sure freeipa.local.xetus.com is resolvable to your localhost
+### 2. ensure freeipa.local.xetus.com is resolvable to your localhost
 
 For example, you can add something like the following to your 
 `/etc/hosts` file:
 
 ```
-127.0.0.1   freeipa.local.xxetus.com
+127.0.0.1   freeipa.local.xetus.com
 ```
 
 ### 3. setup password portal pre-reqs in freeipa server
@@ -39,17 +39,22 @@ to the FreeIPA Docker container created via the `docker-compose` file
 and can be used to conveniently initialize the FreeIPA instance with
 the pre-requisites for the password portal.
 
-At this time the configurer script requires one argument; the password 
+At this time the configurer script requires one argument: the password 
 for the FreeIPA instance's admin account.
 
 ```bash
 docker exec freeipa bash /root/shared/pw-portal-freeipa-configurer.sh 'testabc123'
 ```
 
-> The configurer scripts are parameterized and configured by default to
-work with this project's development environment.
+> Tip: The configurer scripts are parameterized and configured by default to
+work with this project's development environment, but can be configured to use
+a different FreeIPA instance with different values. However, please note that
+the scripts are not very robust at this time.
 
-### 4. locally publish the [iris](https://github.com/xetus-oss/iris) dependency``
+_Check out the [documentation for the configurer scripts](server/ipa-volume)
+for more details_
+
+### 4. locally publish the [iris](https://github.com/xetus-oss/iris) dependency
  
 ```bash
 cd ..
@@ -73,8 +78,8 @@ cp server/config/application-dev.example.yml server/config/application-dev.yml
 In the second terminal, setup and start the UI:
 
 ```bash
-cd ui;
-npm install;
+cd ui
+npm install
 npm run dev
 ```
 
