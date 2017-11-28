@@ -124,7 +124,7 @@ echo "$admin_pass" | ldapmodify -h $server -x -W \
 script_prefix="."
 [[ ! -f create-freeipa-truststore.sh ]] && script_prefix="${BASH_SOURCE%/*}"
 
-bash "$script_prefix"/create-freeipa-truststore.sh -s $server -t $truststore
+bash "$script_prefix"/create-freeipa-truststore.sh -s $server -t $truststore --rm
 
 bash "$script_prefix"/create-krb5-conf.sh -s $server -r $realm -c $krb5_config
 

@@ -8,12 +8,13 @@ truststore="server/config/pw-portal.keystore"
 
 usage() 
 {
-  echo "usage: create_freeipa_truststore [-a alias] [-s server] [-p pem_path] [-t truststore] [-rm]"
+  echo "usage: create-freeipa-truststore [-a alias] [-s server] [-p pem_path] [-t truststore] [--rm]"
   echo
   echo " -a | --alias       the alias with which the certificate should be stored"
   echo " -s | --server      the FreeIPA server"
   echo " -p | --pem-path    the path to which the certificate should be saved"
   echo " -t | --truststore  the output path for the generated java truststore"
+  echo " --rm               whether the truststore should be removed if it already exists"
   echo " -h | --help        show this helpful help message and exit"
   echo  
 }
@@ -34,7 +35,7 @@ while [ "$1" != "" ]; do
     -t | --truststore )     shift
                             truststore=$1
                             ;;
-    -rm | --remove )        remove="true"
+    --rm )                  remove="true"
                             ;;
     -h | --help )           usage
                             exit
@@ -46,7 +47,7 @@ while [ "$1" != "" ]; do
 done
 
 if [ "true" = "$remove" ]; then
-  echo "Removing $truststore..."
+  echo "Removing existing truststore: $truststore..."
   rm $truststore;
 fi
 
