@@ -173,7 +173,7 @@ server/config as a mount point and use `server/config/application.yml`
 as the configuration file:
 
 ```
-docker run --name fpp -d \
+docker run --name portal-server -d \
            -h freeipa-pwd-portal.example.com \
            -p 443:443 \
            -v $PWD/server/config/:/freeipa-pwd-portal/config \

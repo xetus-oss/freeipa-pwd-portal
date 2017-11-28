@@ -16,7 +16,7 @@ SCRIPT_DIR=`pwd -P`
 keystore=/freeipa-pwd-portal/config/pw-portal.keystore
 keystore_pass="changeit"
 cert_alias="freeipa-pwd-portal"
-freeipa_cert=
+freeipa_cert=""
 
 usage() 
 {
@@ -47,7 +47,7 @@ usage()
 
 while [ "$1" != "" ]; do
   case $1 in
-    -ks | --keystore )       shift
+    -ks | --keystore )      shift
                             keystore=$1
                             ;;
     -kp | --keystore-pass ) shift
@@ -118,7 +118,7 @@ echo "Starting the Free IPA Password Portal..."
 java -jar server.jar \
      -Xmx48m -XX:+UseSerialGC \
      -Duser.timezone=UTC \
-     -Djavax.net.ssl.keyStore="$keystore"
-     -Djavax.net.ssl.keyStorePassword="$keystore_pass"
-     -Djavax.net.ssl.trustStore="$keystore"
+     -Djavax.net.ssl.keyStore="$keystore" \
+     -Djavax.net.ssl.keyStorePassword="$keystore_pass" \
+     -Djavax.net.ssl.trustStore="$keystore" \
      -Djavax.net.ssl.trustStorePassword="$keystore_pass"

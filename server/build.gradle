@@ -75,12 +75,15 @@ task buildDockerImage(type: DockerBuildImage){
   group "Build"
   inputDir projectDir
   dockerFile file("${projectDir}/src/main/docker/Dockerfile")
-  imageId "xetusoss/freeipa-pwd-portal"
-  tag  "xetusoss/freeipa-pwd-portal:latest"
+  imageId "xetusoss/freeipa-pwd-portal-server"
+  tag  "xetusoss/freeipa-pwd-portal-server:latest"
 }
 
 task tagDockerImage(type: DockerTagImage){
+  dependsOn "buildDockerImage"
   group "Publishing"
-  imageId = "xetusoss/freeipa-pwd-portal:latest"
+  description "Publishes the built docker image"
+  imageId = "xetusoss/freeipa-pwd-portal-server:latest"
   tag = "latest"
+  repository = "xetusoss/freeipa-pwd-portal-server"
 }
