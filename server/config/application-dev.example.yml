@@ -3,7 +3,7 @@ recaptcha:
     secret-key: "your-recaptcha-secret-key"
 
 pwd-portal:
-  disableRecaptcha: false
+  disableRecaptcha: true
 
 iris:
   hostname: freeipa.local.xetus.com

@@ -1,0 +1,40 @@
+notifications:
+  templateDateFormat: "hh:mm a zzz 'on' MMMM dd yyyy"
+
+  passwordResetEmailConfig:
+    subjectTemplate: "Free IPA Password Reset"
+    messageTemplate: |
+      Dear $name,
+
+      The Free IPA Password Portal received a password reset request 
+      for your account at $requestDate. You can follow the link below 
+      to fulfill your password reset request; please notify a systems 
+      administrator immediately if you did not request a password reset 
+      at this time.
+
+      Reset link: $resetLink
+      Reset token: $resetToken
+
+      This link will remain valid until $expirationDate.
+
+      Sincerely,
+
+      Free IPA Password Portal
+
+      Please do not reply to this automated email.
+
+  passwordChangeEmailConfig:
+    subjectTemplate: "Free IPA Password Change"
+    messageTemplate: |
+      Dear $name,
+
+      Your password was changed using the FreeIPA Password 
+      portal at $date. Please contact a system administrator 
+      immediately if you did not change your password at this 
+      time.
+
+      Sincerely,
+
+      Free IPA Password Portal
+
+      Please do not reply to this automated email.
