@@ -1,1 +1,1 @@
-rootProject.name = 'freeipa-pwd-portal'
+include 'server', 'ui'

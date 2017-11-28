@@ -1,113 +1,39 @@
 buildscript {
   repositories {
-    jcenter()
+    mavenLocal()
+    mavenCentral()
+    maven {
+      url "https://plugins.gradle.org/m2/"
+    }
   }
+
   dependencies {
-    classpath 'org.codehaus.groovy:groovy-all:2.3.9',
-      'org.akhikhl.gretty:gretty:1.1.8'
+    classpath 'org.springframework.boot:spring-boot-gradle-plugin:1.4.2.RELEASE',
+      'org.unbroken-dome.gradle-plugins:gradle-testsets-plugin:1.4.2',
+      'com.moowork.gradle:gradle-node-plugin:1.2.0',
+      'com.bmuschko:gradle-docker-plugin:3.1.0'
   }
 }
 
-apply plugin: 'groovy'
-apply plugin: 'maven-publish'
-apply plugin: 'war'
-apply plugin: 'org.akhikhl.gretty'
+import com.bmuschko.gradle.docker.tasks.container.*
+import com.bmuschko.gradle.docker.tasks.image.*
 
-group = "com.xetus.oss.freeipa-pwd-portal"
-version = "1.0-SNAPSHOT"
-
-/*
- * Gretty configuration
- * (1) We disable gretty reloading because it's painfully slow
- * (2) We use the developmentMode property to swap between using 
- *  the mssql database and an embedded derby db
- */
-gretty {
-  def jvmArgList = [
-    "-Dorg.apache.cxf.Logger=org.apache.cxf.common.logging.Slf4jLogger",
-    "-Dcom.xetus.freeipa-pwd-portal.config=devconfig/"  
-  ]
+allprojects { 
+  apply plugin: 'eclipse'
+  apply plugin: 'com.bmuschko.docker-remote-api'
   
-  servicePort = 9900
-  statusPort = 9901
-  scanInterval = 0
-  fastReload = false
-  httpEnabled = false
-  httpsEnabled = true
-  jvmArgs = jvmArgList
-  recompileOnSourceChange = false
-  reloadOnClassChange = false
-  reloadOnConfigChange = false
-  reloadOnLibChange = false
-  managedClassReload = false
-  inplaceMode = "hard"
-}
-
-configurations {
-  executableWar
-  cliDependencies 
-  
-  compile {
-    extendsFrom cliDependencies
-  }
-
-  providedCompile {
-    extendsFrom executableWar
-  }
-}
-
-dependencies {
-  compile 'org.apache.cxf:cxf-rt-frontend-jaxrs:3.0.2',
-          'org.codehaus.groovy:groovy-all:2.3.9',
-          'org.slf4j:slf4j-api:1.7.5',
-          "ch.qos.logback:logback-classic:1.1.2",
-          "com.xetus.oss.iris:iris:1.0-SNAPSHOT",
-          'org.springframework:spring-web:4.1.2.RELEASE',
-          'javax.inject:javax.inject:1',
-          'javax.mail:mail:1.4.7',
-          'org.codehaus.jackson:jackson-jaxrs:1.9.13', 
-          'org.codehaus.jackson:jackson-xc:1.9.13',
-          'org.tuckey:urlrewritefilter:4.0.4',
-          'me.moocar:logback-gelf:0.12'
-  
-  /*
-   * CliDependencies. Ones that will be used for compiling and copied
-   * into the executable war
-   */
-  cliDependencies 'args4j:args4j:2.0.25'
-
-  executableWar 'org.apache.tomcat.embed:tomcat-embed-core:7.0.57',
-    'org.apache.tomcat.embed:tomcat-embed-logging-juli:7.0.57',
-    'org.apache.tomcat.embed:tomcat-embed-jasper:7.0.57'
-     
-  testCompile "junit:junit:4.11"
-}
-
-
-war {
-  from {
-    configurations.executableWar.collect {
-      it.isDirectory() ? it : project.zipTree(it)
+  repositories {
+    mavenLocal()
+    mavenCentral()
+    maven {
+      url "https://plugins.gradle.org/m2/"
     }
   }
-
-  from {
-    configurations.cliDependencies.collect {
-      it.isDirectory() ? it : project.zipTree(it)
-    }
-  }
-
-  from buildDir.absolutePath + "/classes/main/"
-
-  manifest {
-    attributes 'Main-Class': 'com.xetus.freeipa.pwdportal.EmbeddedRunner'
-  }
-}
-
-publishing {
-  publications {
-    dist(MavenPublication) {
-      artifact war
+  
+  eclipse {
+    classpath {
+      downloadSources = true
+      downloadJavadoc = true
     }
   }
 }

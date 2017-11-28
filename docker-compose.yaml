@@ -1,0 +1,66 @@
+version: '2'
+
+#
+# TODO:
+#
+#
+# 1. allow things (like realm, etc..) to be configurable in an .env file
+# 2. check fi you can set the freeipa hostname to the IP address so that
+# developers don't need to muck around with their /etc/hosts file
+#
+
+services:
+  smtp:
+    image: "mailhog/mailhog:v1.0.0"
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+
+  freeipa:
+    image: freeipa/freeipa-server:fedora-25
+    container_name: freeipa
+    hostname: freeipa.local.xetus.com
+    domainname: freeipa.local.xetus.com
+    extra_hosts:
+      - "freeipa.local.xetus.com:172.16.1.10"
+    privileged: true
+    volumes:
+      - "/sys/fs/cgroup:/sys/fs/cgroup:ro"
+      - "datavol:/data"
+      - "./server/ipa-volume:/root/shared"
+      - "./server/config:/root/pw-portal/config"
+    command:
+      - --ip-address=172.16.1.10
+      - "--domain=local.xetus.com"
+      - "--realm=LOCAL.XETUS.COM"
+      - "--ds-password=testabc123"
+      - "--admin-password=testabc123"
+      - --setup-dns
+      - --auto-forwarders
+      - --unattended
+    environment:
+      IPA_SERVER_IP: "172.16.1.10"
+    ports:
+      - '80:80'
+      - '88:88/tcp'
+      - '88:88/udp'
+      - '464:464/tcp'
+      - '464:464/udp'
+      - '443:443'
+      - '389:389'
+      - '53:53/udp'
+    networks:
+      priv_network:
+        ipv4_address: 172.16.1.10
+
+volumes:
+  datavol:
+
+networks:
+  priv_network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.16.1.0/24
+          gateway: 172.16.1.1

@@ -1,0 +1,22 @@
+@import "variables";
+         
+/*
+* Statements
+*/
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.nav .nav-link.active {
+  color: #000000
+}
+
+input[type='submit'] {
+  @extend a;
+  border: 0px;
+  background: 0px;
+  font-size: 1rem;
+  padding: 0;
+}

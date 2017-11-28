@@ -1,0 +1,60 @@
+/*
+ * Bootstrap variable overrides. Note that to get this to work
+ * without confusing behavior, the below variable overrides 
+ * annotated with "!default" need to be read by the SCSS compiler
+ * prior to the Bootstrap _variables.scss file. This will lead the
+ * SCSS compiler to ignore the duplicate "!default" definitions in
+ * the Bootstrap _variables file in favor of these.
+ */
+
+/*
+ * fonts
+ */
+$font-family-sans-serif: 'Avenir', Helvetica, Arial, sans-serif !default;
+$font-size-base: .875rem !default;
+$font-size-lg:   1rem !default;
+$font-size-sm:   .75rem !default;
+$font-size-xs:   .5rem !default;
+
+/*
+ * border-radius (removed)
+ */
+$border-radius:          0 !default;
+$border-radius-lg:       0 !default;
+$border-radius-sm:       0 !default;
+$nav-tabs-border-radius: 0 !default;
+$btn-border-radius:      0 !default;
+$card-border-radius:     0 !default;
+
+
+/*
+ * links
+ */
+$link-color:            rgb(0, 0, 153) !default;
+$link-hover-color:      #000 !default;
+$link-hover-decoration: underline !default;
+
+/*
+ * modals
+ */
+$modal-inner-padding:         15px !default;
+
+$modal-dialog-margin:         10px !default;
+$modal-dialog-sm-up-margin-y: 30px !default;
+
+$modal-backdrop-bg:           black !default;
+$modal-backdrop-opacity:      .3 !default;
+$modal-header-border-color:   none !default;
+$modal-footer-border-color:   none !default;
+$modal-header-border-width:   0 !default;
+$modal-footer-border-width:   0 !default;
+$modal-header-padding:        15px !default;
+
+$modal-lg:                    800px !default;
+$modal-md:                    500px !default;
+$modal-sm:                    300px !default;
+
+$modal-transition:            transform .3s ease-out !default;
+
+// Core variables and mixins
+@import "~bootstrap/scss/bootstrap";

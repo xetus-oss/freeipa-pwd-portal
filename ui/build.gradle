@@ -1,0 +1,31 @@
+apply plugin: 'com.moowork.node'
+
+node {
+  download = true;
+  version = "6.4.0"
+  npmVersion = "3.10.3"
+  npmCommand = "npm"
+}
+
+task clean() {
+  description = "Cleans the build folders"
+  group = "clean"
+  delete 'build', 'dist'
+}
+
+task setup(dependsOn: ['nodeSetup', 'npmInstall']) {
+  group = "setup"
+  description = "Downloads and installs a local versions of Node and NPM and installs all client dependencies"
+}
+
+task runClient(type: NpmTask) {
+  group = "application"
+  description = "Runs the UI server and client with live reload on changes to both UI server and UI client code. Use the port specified in the line \"Development server is listening [port ...]\"."
+  args = ['start']
+}
+
+task buildUiClient(dependsOn: ['setup'], type: NpmTask) {
+  group = "build"
+  description = "Builds the static Angular2 app assets for deployment"
+  args = ['run', 'build-client']
+}

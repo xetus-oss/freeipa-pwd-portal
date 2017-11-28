@@ -1,0 +1,157 @@
+
+#==============#
+# USING WSGI SESSION
+#
+# note -- you need to first establish a wsgi session with the ipa server using the login command below.
+# the response will contain the ipa_session cookie, which subsequent responses need to pass back
+#==============#
+
+#=========#
+# login with username/password
+#
+# starts a wsgi session with the server. If the credentials are valid, the server
+# will respond with an ipa_session cookie the value of which needs to be sent in
+# subsequent requests as the user.
+#
+# Note that this requires a different endpoint, and is x-www-form-urlencoded instead
+# of json
+#=========#
+curl -v  \
+         -H "referer:https://{{ FREEIPA_SERVER }}/ipa" \
+         -H "Content-Type:application/x-www-form-urlencoded" \
+         --negotiate -u : \
+         -k \
+         -d "user=admin@{{ FREEIPA_REALM }}" -d "password={{ PASSWORD }}"\
+         -X POST https://{{ FREEIPA_SERVER }}/ipa/session/login_password
+
+
+#=========#
+# kerberos login
+#
+# Acquires a session using the kerberos credentials cached by mod_auth_kerberos
+# (not sure of the specifics of the mechanism).
+#
+# NOTE -- the system from which the command is executed must have a valid Kerberos ticket
+# with requisite permissions
+#=========#
+curl -v  \
+         -H "referer:https://{{ FREEIPA_SERVER }}/ipa" \
+         --negotiate -u : \
+         -k \
+         -X POST https://{{ FREEIPA_SERVER }}/ipa/session/login_kerberos
+
+
+
+
+#=========#
+# user_find
+#
+# proxy for the user_find command in the ipa library
+#=========#
+curl -v  \
+         -H "referer:https://{{ FREEIPA_SERVER }}/ipa" \
+         -H "Content-Type:application/json" \
+         -H "Accept:applicaton/json" \
+         -b ipa_session={{ IPA_SESSION }} \
+         --negotiate -u : \
+         -k  \
+         -d  '{"method":"user_find","params":[[],{}],"id":0}' \
+         -X POST https://{{ FREEIPA_SERVER }}/ipa/session/json
+
+
+#=========#
+# user_add
+#
+# proxy for the user_add command in the ipa library
+#=========#
+curl -v  \
+         -H "referer:https://{{ FREEIPA_SERVER }}/ipa" \
+         -H "Content-Type:application/json" \
+         -H "Accept:applicaton/json"\
+         -b ipa_session={{ IPA_SESSION }} \
+         --negotiate -u : \
+         -k  \
+         -d  '{"method":"user_add","params":[[],{"uid": "testuser", "givenname": "TestUser", "sn": "User", "userpassword": "test123!@#"}],"id":0}' \
+         -X POST https://{{ FREEIPA_SERVER }}/ipa/json
+
+#=========#
+# passwd
+#
+# proxy for the password reset command in the ipa library
+#=========#
+curl -v  \
+         -H "referer:https://{{ FREEIPA_SERVER }}/ipa" \
+         -H "Content-Type:application/json" \
+         -H "Accept:applicaton/json"\
+         -b ipa_session={{ IPA_SESSION }} \
+         --negotiate -u : \
+         -k \
+         -d  '{"method":"passwd","params":[["testuser", "test123!@#", "changed123!@#"], {}],"id":0}' \
+         -X POST https://{{ FREEIPA_SERVER }}/ipa/session/json
+
+
+ #=========#
+ # pwpolicy_show
+ #
+ # proxy for the password reset command in the ipa library
+ #=========#
+ curl -v  \
+          -H "referer:https://{{ FREEIPA_SERVER }}/ipa" \
+          -H "Content-Type:application/json" \
+          -H "Accept:applicaton/json"\
+          -b ipa_session={{ IPA_SESSION }} \
+          --negotiate -u : \
+          -k \
+          -d  '{"method":"pwpolicy_show","params":[[], {"all":true, "rights":true}],"id":0}' \
+          -X POST https://{{ FREEIPA_SERVER }}/ipa/session/json
+
+#=========#
+# krbtpolicy_show
+#
+# proxy for the password reset command in the ipa library
+#=========#
+curl -v  \
+         -H "referer:https://{{ FREEIPA_SERVER }}/ipa" \
+         -H "Content-Type:application/json" \
+         -H "Accept:applicaton/json"\
+         -b ipa_session={{ IPA_SESSION }} \
+         --negotiate -u : \
+         -k \
+         -d  '{"method":"krbtpolicy_show","params":[[], {"all":true, "rights":true}],"id":0}' \
+         -X POST https://{{ FREEIPA_SERVER }}/ipa/session/json
+         
+#==============#
+# USING KERBEROS TICKET
+#
+# Note: you need to first establish a valid Kerberos ticket with the
+# FreeIPA host's KDC with adequate privileges
+#==============#
+
+
+#=========#
+# user_find
+#
+# proxy for the user_find command in the ipa library
+#=========#
+curl -v  \
+        -H "referer:https://{{ FREEIPA_SERVER }}/ipa" \
+        -H "Content-Type:application/json" \
+        -H "Accept:applicaton/json"\
+        --negotiate -u : \
+        -k  \
+        -d  '{"method":"user_find","params":[[],{"mail": "testuser@{{ FREEIPA_REALM }}"}],"id":0}' \
+        -X POST https://{{ FREEIPA_SERVER }}/ipa/json
+
+#=========#
+# passwd
+#
+# proxy for the password reset command in the ipa library
+#=========#
+curl -v  \
+         -H "referer:https://{{ FREEIPA_SERVER }}/ipa" \
+         -H "Content-Type:application/json" \
+         -H "Accept:applicaton/json"\
+         --negotiate -u : \
+         -k \
+         -d  '{"method":"passwd","params":[["testuser"], {"password": "changed123!@#"}],"id":0}' \
+         -X POST https://{{ FREEIPA_SERVER }}/ipa/json

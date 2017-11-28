@@ -1,0 +1,63 @@
+apply plugin: 'groovy'
+apply plugin: 'org.springframework.boot'
+
+sourceSets.main.java.outputDir = new File(buildDir, "classes/main")
+sourceSets.main.groovy.outputDir = new File(buildDir, "classes/main")
+
+dependencies {
+
+
+  /*
+   * Logging framework dependencies
+   */
+  compile 'org.springframework.boot:spring-boot-starter-logging'
+    
+  /*
+   * Groovy
+   */
+  compile 'org.codehaus.groovy:groovy-all:2.4.12'
+
+  /*
+   * Spring boot/core
+   */
+  compile 'org.springframework.boot:spring-boot-starter-web',
+    'org.springframework.boot:spring-boot-starter-tomcat',
+    'org.springframework.boot:spring-boot-starter-actuator'
+
+  /*
+   * Spring security
+   */
+  compile "org.springframework.boot:spring-boot-starter-security"
+
+  /*
+   * Spring recaptcha
+   */
+  compile "com.github.mkopylec:recaptcha-spring-boot-starter:1.3.12"
+
+  /*
+   * Email notifications
+   */
+  compile 'javax.mail:mail:1.4.7'
+  
+  /*
+   * Iris
+   */
+  compile "com.xetus.oss.iris:iris-rpc-client-default-bindings:1.0.0-SNAPSHOT"
+
+}
+
+bootRun {  
+  jvmArgs = [
+    "-Dspring.profiles.active=dev",
+    "-Dserver.port=8081",
+    "-Duser.timezone=UTC",
+    "-Djavax.net.ssl.trustStore=" + file("config/pw-portal.keystore"),
+    "-Djavax.net.ssl.trustStorePassword=changeit"
+  ]
+  
+  classpath += files("ipa-volume")
+}
+
+test {
+  systemProperty "user.timezone", "UTC"
+}

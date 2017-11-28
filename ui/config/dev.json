@@ -1,0 +1,17 @@
+{
+  "api": {
+    "baseUrl": "http://localhost:8081"
+  },
+  "recaptcha": {
+    "enabled": false,
+    "publicKey": null
+  },
+  "server": {
+    "staticRoot": "./dist/",
+    "port": 8080
+  },
+  "logging": {
+    "config": "./config/log4js.json"
+  }
+}
+  

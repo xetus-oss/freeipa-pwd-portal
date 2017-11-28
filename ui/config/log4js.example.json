@@ -1,0 +1,19 @@
+{
+  "appenders": {
+    "console": { "type": "console" },
+    "file": {
+      "type": "file",
+      "filename": "/var/log/freeipa-pwd-portal/ui-server.log",
+      "maxLogSize": 20480,
+      "backups": 10
+    },
+    "gelf": {
+      "type": "gelf",
+      "host": "logs.local.xetus.com",
+      "facility": "freeipa-pwd-portal-ui-server"
+    }
+  },
+  "categories": { 
+    "default": { "appenders": ["console", "file", "gelf"], "level": "error" } 
+  }
+}

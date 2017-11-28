@@ -1,0 +1,6 @@
+/build/
+/bin/
+.classpath
+.groovy
+config/
+!config/application-dev.example.yml
