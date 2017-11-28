@@ -1,8 +1,18 @@
 apply plugin: 'groovy'
 apply plugin: 'org.springframework.boot'
+apply plugin: 'com.bmuschko.docker-java-application'
+
+import com.bmuschko.gradle.docker.tasks.container.*
+import com.bmuschko.gradle.docker.tasks.image.*
 
 sourceSets.main.java.outputDir = new File(buildDir, "classes/main")
 sourceSets.main.groovy.outputDir = new File(buildDir, "classes/main")
+
+sourceSets {
+  main {
+    resources.srcDirs = ["src/main/resources", "src/main/docker"]
+  }
+}
 
 dependencies {
 
@@ -54,10 +64,23 @@ bootRun {
     "-Djavax.net.ssl.trustStore=" + file("config/pw-portal.keystore"),
     "-Djavax.net.ssl.trustStorePassword=changeit"
   ]
-  
-  classpath += files("ipa-volume")
 }
 
 test {
   systemProperty "user.timezone", "UTC"
+}
+
+task buildDockerImage(type: DockerBuildImage){
+  dependsOn bootRepackage
+  group "Build"
+  inputDir projectDir
+  dockerFile file("${projectDir}/src/main/docker/Dockerfile")
+  imageId "xetusoss/freeipa-pwd-portal"
+  tag  "xetusoss/freeipa-pwd-portal:latest"
+}
+
+task tagDockerImage(type: DockerTagImage){
+  group "Publishing"
+  imageId = "xetusoss/freeipa-pwd-portal:latest"
+  tag = "latest"
 }
