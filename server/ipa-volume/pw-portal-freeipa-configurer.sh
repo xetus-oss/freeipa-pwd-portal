@@ -19,6 +19,7 @@ usage()
   echo " -h | --host_name   the host name for the passord portal"
   echo " -p | --host_ip     the password portal's host ip"
   echo " -t | --truststore  the output path for the generated java truststore"
+  echo " -k | --keytab      the output path for the generated keytab"
   echo " -krb | --krb5-conf the output path for the generated krb5.conf"
   echo " -dn                the LDAP dn for the FreeIPA instance"
   echo " -h | --help        show this helpful help message and exit"
