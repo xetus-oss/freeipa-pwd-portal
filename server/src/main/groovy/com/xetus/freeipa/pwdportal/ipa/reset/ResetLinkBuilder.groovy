@@ -1,6 +1,4 @@
-package com.xetus.freeipa.pwdportal.notification;
-
-import com.xetus.freeipa.pwdportal.ipa.reset.ResetRequest
+package com.xetus.freeipa.pwdportal.ipa.reset;
 
 import groovy.transform.CompileStatic;
 

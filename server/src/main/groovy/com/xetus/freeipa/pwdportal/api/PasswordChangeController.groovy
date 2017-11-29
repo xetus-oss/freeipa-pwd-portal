@@ -33,17 +33,14 @@ import com.xetus.freeipa.pwdportal.model.PwPortalUser
 public class PasswordChangeController {
   
   ChangeService changeService
-  EmailNotificationService emailService
   RecaptchaService recaptcha;
   RequestIpResolver ipResolver;
   
   @Autowired
   public PasswordResetController(ChangeService changeService,
-                                 EmailNotificationService emailService,
                                  RecaptchaService recaptcha,
                                  RequestIpResolver ipResolver) {
     this.changeService = changeService
-    this.emailService = emailService
     this.recaptcha = recaptcha
     this.ipResolver = ipResolver
   }
@@ -65,18 +62,6 @@ public class PasswordChangeController {
         data.password,
         data.newPassword
       )
-      
-      if (user.email) {
-        log.trace "Located user ${user}'s email: $user.email"
-        emailService.emailPasswordChangeNotification(
-            user.email, 
-            username, 
-            new Date()
-        );
-      } else {
-        log.warn "Failed to send password change notification email " +
-                 "to user $username; no email was found"
-      }
       log.trace "Returning success"
       return ResponseEntity.ok()
                            .body(new APIResponse("Successfully changed password"));

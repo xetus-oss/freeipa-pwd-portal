@@ -17,10 +17,13 @@ import groovy.util.logging.Slf4j
 public class ChangeService {
   
   FreeIPAClientService clientService
+  ChangeNotificationService emailService;
   
   @Autowired
-  public ChangeService(FreeIPAClientService clientService) {
-    this.clientService = clientService
+  public ChangeService(FreeIPAClientService clientService,
+                       ChangeNotificationService emailService) {
+    this.clientService = clientService;
+    this.emailService = emailService;
   }
   
   public PwPortalUser change(String user, String password, String newPassword) {
@@ -32,9 +35,18 @@ public class ChangeService {
         .userFind([], [uid: user])
     
     List<PwPortalUser> results = r.getResult()
-    if (results && results.size() > 0) {
-      return results[0]
+    if (!results || results.size() < 1) {
+      return null;
     }
-    return null
+    
+    PwPortalUser account = results[0]
+    if (account.email) {
+      log.trace "Located user ${account}'s email: $account.email"
+      emailService.notify(account.email, user, new Date());
+    } else {
+      log.warn "Failed to send password change notification email " +
+               "to user $user; no email was found"
+    }
+    return account;
   }
 }

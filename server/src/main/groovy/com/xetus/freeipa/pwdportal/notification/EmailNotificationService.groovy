@@ -1,12 +1,7 @@
 package com.xetus.freeipa.pwdportal.notification
 
-import java.text.DateFormat
-import java.util.Date
-
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-
-import com.xetus.freeipa.pwdportal.ipa.reset.ResetRequest
 
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
@@ -22,67 +17,14 @@ import javax.mail.internet.MimeMessage
 class EmailNotificationService {
 
   private NotificationsConfig config;
-  private ResetLinkBuilder linkBuilder;
-  private DateFormat df;
   
   @Autowired
   public EmailNotificationService(NotificationsConfig config) {
     this.config = config;
-    this.linkBuilder = new ResetLinkBuilder(config.webUri);
   }
   
-  DateFormat getDateFormat() {
-    if (df == null) {
-      df = config.getDateFormat();
-    }
-    return df;
-  }
-  
-  String getPortalReference() {
-    return config.webUri != null ? 
-      config.webUri : "your friendly neighborhood FreeIPA Password Portal"  
-  }
-    
-  void emailPasswordResetUrl(String email, 
-                             ResetRequest request) {
-    def engine = new groovy.text.SimpleTemplateEngine()
-    def binding = [
-      "resetLink": linkBuilder.build(request),
-      "requestId": request.resetId,
-      "name": request.name,
-      "requestIp": request.requestIp,
-      "requestDate": getDateFormat().format(request.requestDate),
-      "resetToken": request.token,
-      "expirationDate": getDateFormat().format(request.expirationDate) 
-    ]
-    
-    def subjectTmpl = engine
-      .createTemplate(config.passwordResetEmailConfig.subjectTemplate)
-      .make(binding)
-      
-    def messageTmpl = engine
-      .createTemplate(config.passwordResetEmailConfig.messageTemplate)
-      .make(binding)
-    
-    sendMessage(email, subjectTmpl?.toString(), messageTmpl?.toString())
-  }
-
-  void emailPasswordChangeNotification(String email, String name, Date date) {
-    def engine = new groovy.text.SimpleTemplateEngine()
-    def binding = [
-      "name": name,
-      "date": getDateFormat().format(date)  
-    ]
-    
-    def subjectTmpl = engine
-      .createTemplate(config.passwordChangeEmailConfig.subjectTemplate)
-      .make(binding)
-      
-    def messageTmpl = engine
-      .createTemplate(config.passwordChangeEmailConfig.messageTemplate)
-      .make(binding)
-      
-    sendMessage(email, subjectTmpl?.toString(), messageTmpl?.toString())
+  void sendMessage(EmailNotification email) {
+    sendMessage(email.recipient, email.subject, email.message)
   }
 
   void sendMessage(String to, String subject, String message) {

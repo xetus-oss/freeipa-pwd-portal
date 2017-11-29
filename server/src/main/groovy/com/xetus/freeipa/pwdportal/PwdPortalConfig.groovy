@@ -17,12 +17,6 @@ public class PwdPortalConfig {
   String xForwardedForHeader = "X-Forwarded-For"
   
   /**
-   * The time limit in seconds to impose on password reset
-   * requests
-   */
-  int passwordResetRequestTimeLimit = (15 * 60)
-  
-  /**
    * If true indicates recaptcha should be disabled for the whole site
    */
   boolean disableRecaptcha;

@@ -29,17 +29,14 @@ import com.xetus.freeipa.pwdportal.ipa.reset.ResetRequest
 public class PasswordResetController {
   
   ResetService resetService
-  EmailNotificationService emailService
   RecaptchaService recaptcha
   RequestIpResolver ipResolver
   
   @Autowired
   public PasswordResetController(ResetService resetService,
-                                 EmailNotificationService emailService,
                                  RecaptchaService recaptcha,
                                  RequestIpResolver ipResolver) {
     this.resetService = resetService
-    this.emailService = emailService
     this.recaptcha = recaptcha
     this.ipResolver = ipResolver
   }
@@ -57,7 +54,6 @@ public class PasswordResetController {
 
     try {
       def request = resetService.request(user, requestIp)
-      emailService.emailPasswordResetUrl(request.email, request)
       return ResponseEntity.ok()
                            .body(new APIResponse("Successfully issued reset email"));
     } catch(IllegalArgumentException e) {
@@ -88,11 +84,6 @@ public class PasswordResetController {
         token: data.token 
       );
       ResetRequest request = resetService.reset(fulfillment)
-      emailService.emailPasswordChangeNotification(
-          request.email, 
-          request.name, 
-          new Date()
-      )
       return ResponseEntity.ok()
                            .body(new APIResponse("Successfully reset password"));
 

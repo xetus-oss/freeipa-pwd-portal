@@ -6,8 +6,6 @@ import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-import com.xetus.freeipa.pwdportal.PwdPortalConfig
-
 import groovy.time.TimeCategory;
 import groovy.time.TimeDuration;
 import groovy.transform.CompileStatic
@@ -17,10 +15,10 @@ import groovy.transform.CompileStatic
 public class ResetRequestBuilder {
   
   private SecureRandom random
-  private PwdPortalConfig config
+  private ResetConfig config
   
   @Autowired
-  public ResetRequestBuilder(PwdPortalConfig config) {
+  public ResetRequestBuilder(ResetConfig config) {
     this.config = config;
     this.random = new SecureRandom();
   }

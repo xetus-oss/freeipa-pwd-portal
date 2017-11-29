@@ -19,41 +19,6 @@ import groovy.transform.CompileStatic
 @Component
 @ConfigurationProperties(prefix = "notifications")
 public class NotificationsConfig {
-
-  /**
-   * The configuration for the password reset email that is sent to users 
-   * who have requested a password reset. Available bindings for both the 
-   * subject and message are: <ul>
-   * 
-   *  <li>$name: {@link PasswordResetRequest#getName()}
-   *  <li>$requestId: {@link PasswordResetRequest#getRequestId()}
-   *  <li>$requestIp: {@link PasswordResetRequest#getRequestIp()}
-   *  <li>$requestDate: {@link PasswordResetRequest#getRequestDate()}
-   *  <li>$expirationDate: {@link PasswordResetRequest#getExpirationDate()}
-   *  <li>$generatedLink: The url generated according to {@link 
-   *      FreeIPARestService#generateResetLink(PasswordResetRequest)} that the user
-   *      will follow to reset their password
-   *      
-   * </ul>
-   * 
-   * Note that dates are formatted according to the dateFormat configuration
-   */
-  @NotNull
-  EmailNotificationConfig passwordResetEmailConfig
-
-  /**
-   * The configuration for the password change email that is sent to any
-   * user whose password was changed through the password reset portal.
-   * Available bindings for both the subject and message are: <ul>
-   * 
-   *  <li>$name: The user's LDAP name
-   *  <li>$date: The date the password was changed
-   * 
-   * </ul>
-   */
-  @NotNull
-  EmailNotificationConfig passwordChangeEmailConfig
-  
   /**
    * The optional web URI at which users access the FreeIPA password 
    * portal instance. This will be included in emails to redirect users

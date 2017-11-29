@@ -1,3 +1,10 @@
+password:
+  expiration:
+    # cron: '* * * * * *'
+    warningStartDay: 100
+    summaryRecipients:
+      - admin
+
 recaptcha:
   validation:
     secret-key: "your-recaptcha-secret-key"

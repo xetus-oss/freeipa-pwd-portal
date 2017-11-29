@@ -20,14 +20,17 @@ public class ResetService {
   FreeIPAClientService clientService;
   ResetRequestBuilder resetRequestBuilder;
   ResetRequestCacheService resetRequestCache;
+  ResetNotificationService emailService;
   
   @Autowired
   public ResetService(FreeIPAClientService clientService,
                       ResetRequestBuilder resetRequestBuilder,
-                      ResetRequestCacheService resetRequestCache) {
+                      ResetRequestCacheService resetRequestCache,
+                      ResetNotificationService emailService) {
     this.clientService = clientService;
-    this.resetRequestBuilder = resetRequestBuilder
-    this.resetRequestCache = resetRequestCache
+    this.resetRequestBuilder = resetRequestBuilder;
+    this.resetRequestCache = resetRequestCache;
+    this.emailService = emailService;
   }
   
   public ResetRequest request(String user, String requestIp) {
@@ -50,6 +53,8 @@ public class ResetService {
     
     def request = resetRequestBuilder.build(user, email, requestIp)
     resetRequestCache.addRequest(request)
+    
+    emailService.sendResetLink(request.email, request);
     log.info("Issued request link for $user that is valid "
            + "until ${request.getExpirationDate()}")
     return request;
@@ -78,7 +83,9 @@ public class ResetService {
     
     krbClient.passwd(request.name, tmpPwd)
     clientService.resetPassword(request.name, tmpPwd, fulfillment.newPassword)
+    
     log.info "Successfully reset password for user: $request.name"
+    emailService.notifyOfchange(request.email, request.name, new Date());
     
     resetRequestCache.removeRequest(request)
     return request;
