@@ -9,9 +9,6 @@ recaptcha:
   validation:
     secret-key: "your-recaptcha-secret-key"
 
-pwd-portal:
-  disableRecaptcha: true
-
 iris:
   hostname: freeipa.local.xetus.com
   realm: LOCAL.XETUS.COM

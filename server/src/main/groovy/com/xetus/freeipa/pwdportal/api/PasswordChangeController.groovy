@@ -34,15 +34,12 @@ public class PasswordChangeController {
   
   ChangeService changeService
   RecaptchaService recaptcha;
-  RequestIpResolver ipResolver;
   
   @Autowired
   public PasswordResetController(ChangeService changeService,
-                                 RecaptchaService recaptcha,
-                                 RequestIpResolver ipResolver) {
+                                 RecaptchaService recaptcha) {
     this.changeService = changeService
     this.recaptcha = recaptcha
-    this.ipResolver = ipResolver
   }
   
   @RequestMapping(value = "/api/password/{username}/change", method = RequestMethod.POST)
@@ -50,7 +47,7 @@ public class PasswordChangeController {
                                             @RequestBody ChangeRequest data,
                                             HttpServletRequest request) {
     log.info "Change password attempt received for user: $username"
-    String requestIp = ipResolver.resolve(request)
+    String requestIp = request.getRemoteAddr();
     if (!recaptcha.verifyRecaptcha(data.recaptchaResponse, requestIp)) {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                             .body(APIResponse.invalidRecaptcha())

@@ -30,15 +30,12 @@ public class PasswordResetController {
   
   ResetService resetService
   RecaptchaService recaptcha
-  RequestIpResolver ipResolver
   
   @Autowired
   public PasswordResetController(ResetService resetService,
-                                 RecaptchaService recaptcha,
-                                 RequestIpResolver ipResolver) {
+                                 RecaptchaService recaptcha) {
     this.resetService = resetService
     this.recaptcha = recaptcha
-    this.ipResolver = ipResolver
   }
   
   @RequestMapping(value = "/api/password/{user}/reset/request", method = RequestMethod.POST)
@@ -46,7 +43,7 @@ public class PasswordResetController {
                                                   @RequestBody ResetRequestData data,
                                                   HttpServletRequest httpRequest) {
     log.info "Received reset request for user: $user"
-    def requestIp = ipResolver.resolve(httpRequest)
+    def requestIp = httpRequest.getRemoteAddr();
     if (!recaptcha.verifyRecaptcha(data.recaptchaResponse, requestIp)) {
       return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .body(APIResponse.invalidRecaptcha())
@@ -71,7 +68,7 @@ public class PasswordResetController {
                                            @RequestBody ResetData data,
                                            HttpServletRequest httpRequest) {
     log.info "Received reset completion for user: $user"
-    def requestIp = ipResolver.resolve(httpRequest)
+    def requestIp = httpRequest.getRemoteAddr();
     if (!recaptcha.verifyRecaptcha(data.recaptchaResponse, requestIp)) {
       return ResponseEntity.status(HttpStatus.FORBIDDEN)
                            .body(APIResponse.invalidRecaptcha());

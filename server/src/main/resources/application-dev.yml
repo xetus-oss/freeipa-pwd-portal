@@ -1,5 +1,3 @@
-pwd-portal:
-  disableRecaptcha: true
 
 notifications:
   smtpHost: smtp.dev.xetus.com
