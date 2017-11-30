@@ -19,4 +19,4 @@ ADD build/libs/server-*.jar /freeipa-pwd-portal/server.jar
 #
 EXPOSE 443/tcp
 
-ENTRYPOINT /freeipa-pwd-portal/bootscript
+ENTRYPOINT ["./freeipa-pwd-portal/bootscript"]

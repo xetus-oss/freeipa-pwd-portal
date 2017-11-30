@@ -1,14 +1,5 @@
 #!/bin/sh
 
-SCRIPT_PATH="$0"
-while [ -h "$SCRIPT_PATH" ]
-do
-  SCRIPT_PATH=`readlink -f $SCRIPT_PATH`
-done
-
-cd `dirname $SCRIPT_PATH`
-SCRIPT_DIR=`pwd -P`
-
 #
 # JVM-level configurations that need to be specified prior to starting 
 # the JVM; everything else should be configurable in the application.yml
@@ -20,7 +11,7 @@ freeipa_cert=""
 
 usage() 
 {
-  echo "usage: docker run -d -v \$PWD/pwd-portal:/freeipa-pwd-portal/config xetusoss/freeipa-pwd-portal [-ks keystore] [-kp keystore_pass] [-a cert_alias] [-fc freeipa_cert]"
+  echo "usage: docker run -d -v data:/freeipa-pwd-portal/config xetusoss/freeipa-pwd-portal [-ks keystore] [-kp keystore_pass] [-a cert_alias] [-fc freeipa_cert]"
   echo
   echo " -ks | --keystore        the container path for the keystore"
   echo "                         default: /freeipa-pwd-portal/config/pw-portal.keystore"
@@ -68,6 +59,14 @@ while [ "$1" != "" ]; do
   shift
 done
 
+SCRIPT_PATH="$0"
+while [ -h "$SCRIPT_PATH" ]
+do
+  SCRIPT_PATH=`readlink -f $SCRIPT_PATH`
+done
+
+cd `dirname $SCRIPT_PATH`
+SCRIPT_DIR=`pwd -P`
 
 #
 # If no keystore is supplied containing the freeipa-pwd-portal private and public
