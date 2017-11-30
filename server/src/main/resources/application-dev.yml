@@ -1,5 +1,5 @@
 recaptcha:
-  enabled: true
+  enabled: false
 
 notifications:
   smtpHost: smtp.dev.xetus.com
