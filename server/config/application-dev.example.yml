@@ -6,6 +6,7 @@ password:
       - admin
 
 recaptcha:
+  enabled: false
   validation:
     secret-key: "your-recaptcha-secret-key"
 

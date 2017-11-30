@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component
 
 import com.github.mkopylec.recaptcha.validation.RecaptchaValidator
 import com.github.mkopylec.recaptcha.validation.ValidationResult
-import com.xetus.freeipa.pwdportal.PwdPortalConfig
 
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
@@ -20,18 +19,18 @@ import groovy.util.logging.Slf4j
 @CompileStatic
 public class RecaptchaService {
   
-  PwdPortalConfig config;
+  RecaptchaConfig config;
   RecaptchaValidator validator
   
   @Autowired
-  public RecaptchaService(PwdPortalConfig config, 
+  public RecaptchaService(RecaptchaConfig config, 
                           RecaptchaValidator validator) {
     this.config = config;
     this.validator = validator;
   }
   
   boolean verifyRecaptcha(String response, String requestIp) {
-    if (config.disableRecaptcha) {
+    if (!config.enabled) {
       return true
     }
     
