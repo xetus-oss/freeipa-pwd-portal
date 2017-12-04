@@ -1,18 +1,20 @@
 #!/bin/bash
 
-alias="freeipa"
+alias_path="freeipa"
 server="freeipa.local.xetus.com"
+port="443"
 pem_path="/tmp/freeipa.local.xetus.com.pem"
 remove="false"
 truststore="server/config/pw-portal.keystore"
 
 usage() 
 {
-  echo "usage: create-freeipa-truststore [-a alias] [-s server] [-p pem_path] [-t truststore] [--rm]"
+  echo "usage: create-freeipa-truststore [-a alias] [-s server] [-p port] [-c pem_path] [-t truststore] [--rm]"
   echo
   echo " -a | --alias       the alias with which the certificate should be stored"
+  echo " -c | --cert-path   the path to which the certificate should be saved"
   echo " -s | --server      the FreeIPA server"
-  echo " -p | --pem-path    the path to which the certificate should be saved"
+  echo " -p | --port        the FreeIPA server port (defaults to 443)"
   echo " -t | --truststore  the output path for the generated java truststore"
   echo " --rm               whether the truststore should be removed if it already exists"
   echo " -h | --help        show this helpful help message and exit"
@@ -26,11 +28,14 @@ while [ "$1" != "" ]; do
     -a | --alias)           shift
                             alias_path=$1
                             ;; 
-    -p | --pem-path)        shift
+    -c | --cert-path)       shift
                             pem_path=$1
                             ;; 
     -s | --server )         shift
                             server=$1
+                            ;; 
+    -p | --port )           shift
+                            port=$1
                             ;;
     -t | --truststore )     shift
                             truststore=$1
@@ -52,18 +57,18 @@ if [ "true" = "$remove" ]; then
 fi
 
 openssl s_client -showcerts \
-                 -connect $server:443 \
+                 -connect $server:$port \
                  < /dev/null 2> /dev/null \
         | openssl x509 -outform PEM > $pem_path
 
 [[ "$?" -ne 0 ]] && \
     echo "" && \
-    echo "failed to download the certificate from $server" && \
+    echo "failed to download the certificate from $server:$port" && \
     echo "" && \
     exit $?
 
 keytool -import -trustcacerts -noprompt \
-        -alias $alias \
+        -alias $alias_path \
         -file $pem_path \
         -keystore $truststore \
         -storepass changeit
@@ -74,5 +79,5 @@ keytool -import -trustcacerts -noprompt \
     echo "" && \
     exit $?
 
-echo "added cert for $server to $truststore"
+echo "added cert for $server:$port to $truststore"
 echo

@@ -168,22 +168,36 @@ benefits:
 
 ###### Quick Start
 
-If run from the root project directory, the below command will use 
-server/config as a mount point and use `server/config/application.yml`
-as the configuration file:
+If run from the root project directory, the below command will: 
+
+* use server/config as a mount point;
+* use `server/config/application.yml` as the configuration file; and
+* enable JVM-level debug logging for Kerberos and SPNEGO.
+
+Make sure to replace "YOUR_HOST_IP" with any IP assigned to your host 
+system accessible by the Docker container and at which your local FreeIPA
+instance is accessible:
 
 ```
 docker run --name portal-server -d \
-           -h freeipa-pwd-portal.example.com \
-           -p 443:443 \
-           -v $PWD/server/config/:/freeipa-pwd-portal/config \
-           xetusoss/freeipa-pwd-portal
+           -h pw-portal.local.xetus.com \
+           -p 6443:443 \
+           -v $PWD/config/:/freeipa-pwd-portal/config \
+           --add-host "freeipa:YOUR_HOST_IP" \
+           xetusoss/freeipa-pwd-portal-server --debug
 ```
+
+> Note: the `--add-host` line is only used here to resolve the development 
+> FreeIPA instance configured in the project's root `docker-compose.yml` file.
+> 
+> The `debug` flag enables JVM-level Kerberos and SPNEGO debugging.
+> 
+> Both can be omitted for non-development use.
 
 To see the configurable options, run:
 
 ```
-docker run --rm xetusoss/freeipa-pwd-portal --help
+docker run --rm xetusoss/freeipa-pwd-portal-server --help
 ```
 
 ###### Building
@@ -191,5 +205,5 @@ docker run --rm xetusoss/freeipa-pwd-portal --help
 You can buid the docker conatiner by running:
 
 ```
-./gradlew buildDocker
+./gradlew server:buildDocker
 ```

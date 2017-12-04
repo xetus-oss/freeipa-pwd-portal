@@ -11,6 +11,7 @@ version: '2'
 
 services:
   smtp:
+    container_name: mailhog
     image: "mailhog/mailhog:v1.0.0"
     ports:
       - "1025:1025"
@@ -40,18 +41,29 @@ services:
       - --unattended
     environment:
       IPA_SERVER_IP: "172.16.1.10"
-    ports:
-      - '80:80'
-      - '88:88/tcp'
-      - '88:88/udp'
-      - '464:464/tcp'
-      - '464:464/udp'
-      - '443:443'
-      - '389:389'
-      - '53:53/udp'
     networks:
       priv_network:
         ipv4_address: 172.16.1.10
+
+  nginx:
+    image: nginx:alpine
+    container_name: freeipa-nginx
+    hostname: freeipa
+    domainname: freeipa
+    extra_hosts:
+      - "freeipa.local.xetus.com:172.16.1.10"
+    ports:
+      - '8888:8888/tcp'
+      - '8888:8888/udp'
+      - '9443:9443/tcp'
+    volumes:
+      - "./server/nginx/nginx.conf:/etc/nginx/nginx.conf"
+      - "./server/nginx/nginx.crt:/etc/nginx/ssl/nginx.crt"
+      - "./server/nginx/nginx.key:/etc/nginx/ssl/nginx.key"
+    networks:
+      default:
+      priv_network:
+        ipv4_address: 172.16.1.11
 
 volumes:
   datavol:

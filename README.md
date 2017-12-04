@@ -39,13 +39,16 @@ the compose file uses `privileged=true` in order to run on mac osx.
    and can be used to conveniently initialize the FreeIPA instance with
    the pre-requisites for the password portal.
    
-   At this time the configurer script requires one argument: the password 
-   for the FreeIPA instance's admin account. Use the following command to
-   run the configurer (replacing "YOUR_HOST_IP" with your host's IP
-   address):
+   The following command will run the configurer for the default 
+   development environment setup (make sure to replace "YOUR_HOST_IP" 
+   with your host's IP address):
    
    ```bash
-   docker exec freeipa bash /root/shared/pw-portal-freeipa-configurer.sh -ip YOUR_HOST_IP 'testabc123'
+   docker exec freeipa bash /root/shared/pw-portal-freeipa-configurer.sh \
+                        -ip YOUR_HOST_IP \
+                        --server-port 9443 \
+                        --kdc-port 8888 \
+                        'testabc123'
    ```
    _Please see the [documentation for the configurer scripts](server/ipa-volume)
    for more details_

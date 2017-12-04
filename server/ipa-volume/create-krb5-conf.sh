@@ -3,14 +3,18 @@
 server="freeipa.local.xetus.com"
 realm="LOCAL.XETUS.COM"
 config="krb5.conf"
+kdc_port=""
 
 usage() 
 {
-  echo "usage: create-krb5-conf [-s server] [-r realm] [-c krb5.conf]"
+  echo "usage: create-krb5-conf [-s server] [-r realm] [-c krb5.conf] [-p kdc_port]"
   echo
   echo " -s | --server      the FreeIPA server"
   echo " -r | --realm       the realm to which the password portal should be added"
   echo " -c | --config      the path where the krb5 config should be created"
+  echo " -p | --port        optional port override for KDC and admin server"
+  echo "                    default: unspecified (the Kerberos default)"
+  echo
   echo " -h | --help        show this helpful help message and exit"
   echo  
 }
@@ -27,6 +31,9 @@ while [ "$2" != "" ]; do
                               ;;
     -c | --config )           shift
                               config=$1
+                              ;;
+    -p | --port )             shift
+                              kdc_port=":$1"
                               ;;
     -h | --help )             usage
                               exit
@@ -47,8 +54,8 @@ cat << EOF > "$config"
 
 [realms]
   $realm = {
-    kdc = $server
-    admin_server = $server
+    kdc = $server$kdc_port
+    admin_server = $server$kdc_port
   }
 EOF
 

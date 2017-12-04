@@ -1,9 +1,11 @@
 #!/bin/bash
 
 server="freeipa.local.xetus.com"
+server_port=443
 realm="LOCAL.XETUS.COM"
 truststore="/root/pw-portal/config/pw-portal.keystore"
 krb5_config="/root/pw-portal/config/krb5.conf"
+kdc_port=88
 keytab="/root/pw-portal/config/pw-portal.local.xetus.com.keytab"
 host_name="pw-portal.local.xetus.com"
 host_ip="192.168.51.1"
@@ -12,14 +14,16 @@ dn="dc=local,dc=xetus,dc=com"
 
 usage() 
 {
-  echo "usage: pw-portal-freeipa-configurer [-s server] [-r realm] [-h host_name] [-ip host_ip] [-t truststore] [-krb krb5.conf] [-k keytab] admin_pass"
+  echo "usage: pw-portal-freeipa-configurer [-s server] [-sp server_port] [-r realm] [-h host_name] [-ip host_ip] [-t truststore] [-krb krb5.conf] [-kp kdc_port] [-k keytab] admin_pass"
   echo
   echo " -s | --server      the FreeIPA server"
+  echo " -p | --server-port the HTTP(S) port on which FreeIPA is accessible (defaults to 443"
   echo " -r | --realm       the realm to which the password portal should be added"
   echo " -h | --host_name   the host name for the passord portal"
   echo " -p | --host_ip     the password portal's host ip"
   echo " -t | --truststore  the output path for the generated java truststore"
   echo " -k | --keytab      the output path for the generated keytab"
+  echo " -kp | --kdc-port   the port on which the KDC is accessible (defaults to 88)"
   echo " -krb | --krb5-conf the output path for the generated krb5.conf"
   echo " -dn                the LDAP dn for the FreeIPA instance"
   echo " -h | --help        show this helpful help message and exit"
@@ -36,6 +40,9 @@ while [ "$2" != "" ]; do
     -s | --server )         shift
                             server=$1
                             ;;
+    -sp | --server-port )   shift
+                            server_port=$1
+                            ;;
     -h | --hostname )       shift
                             host_name=$1
                             ;;
@@ -47,6 +54,9 @@ while [ "$2" != "" ]; do
                             ;;
     -k | --keytab )         shift
                             keytab=$1
+                            ;;
+    -kp | --kdc-port )      shift
+                            kdc_port=$1
                             ;;
     -krb | --krb5-conf )    shift
                             krb5_config=$1
@@ -125,9 +135,9 @@ echo "$admin_pass" | ldapmodify -h $server -x -W \
 script_prefix="."
 [[ ! -f create-freeipa-truststore.sh ]] && script_prefix="${BASH_SOURCE%/*}"
 
-bash "$script_prefix"/create-freeipa-truststore.sh -s $server -t $truststore --rm
+bash "$script_prefix"/create-freeipa-truststore.sh -s $server -p $server_port -t $truststore --rm
 
-bash "$script_prefix"/create-krb5-conf.sh -s $server -r $realm -c $krb5_config
+bash "$script_prefix"/create-krb5-conf.sh -s $server -p $kdc_port -r $realm -c $krb5_config
 
 echo
 echo "Done!"

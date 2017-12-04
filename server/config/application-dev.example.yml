@@ -11,7 +11,7 @@ recaptcha:
     secret-key: "your-recaptcha-secret-key"
 
 iris:
-  hostname: freeipa.local.xetus.com
+  hostname: freeipa.local.xetus.com:9443
   realm: LOCAL.XETUS.COM
   keytabPath: config/pw-portal.local.xetus.com.keytab
   principal: host/pw-portal.local.xetus.com@LOCAL.XETUS.COM
