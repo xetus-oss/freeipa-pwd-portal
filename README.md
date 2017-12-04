@@ -77,9 +77,7 @@ the compose file uses `privileged=true` in order to run on mac osx.
    In the second terminal, setup and start the UI:
    
    ```bash
-   cd ui
-   npm install
-   npm run dev
+   ./gradlew ui:run
    ```
 
    You can then access the web UI at `http://localhost:8080`
