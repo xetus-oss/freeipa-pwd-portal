@@ -14,18 +14,19 @@ dn="dc=local,dc=xetus,dc=com"
 
 usage() 
 {
-  echo "usage: pw-portal-freeipa-configurer [-s server] [-sp server_port] [-r realm] [-h host_name] [-ip host_ip] [-t truststore] [-krb krb5.conf] [-kp kdc_port] [-k keytab] admin_pass"
+  echo "usage: pw-portal-freeipa-configurer [-s server] [-sp server_port] [-r realm] [-n host_name] [-ip host_ip] [-t truststore] [-krb krb5.conf] [-kp kdc_port] [-k keytab] admin_pass"
   echo
-  echo " -s | --server      the FreeIPA server"
-  echo " -p | --server-port the HTTP(S) port on which FreeIPA is accessible (defaults to 443"
-  echo " -r | --realm       the realm to which the password portal should be added"
-  echo " -h | --host_name   the host name for the passord portal"
-  echo " -p | --host_ip     the password portal's host ip"
-  echo " -t | --truststore  the output path for the generated java truststore"
+  echo " -dn                the LDAP dn for the FreeIPA instance"
+  echo " -ip | --host_ip    the password portal's host ip"
   echo " -k | --keytab      the output path for the generated keytab"
   echo " -kp | --kdc-port   the port on which the KDC is accessible (defaults to 88)"
   echo " -krb | --krb5-conf the output path for the generated krb5.conf"
-  echo " -dn                the LDAP dn for the FreeIPA instance"
+  echo " -n | --host_name   the host name for the passord portal"
+  echo " --no-truststore    do not create the trust store"
+  echo " -p | --server-port the HTTP(S) port on which FreeIPA is accessible (defaults to 443"
+  echo " -r | --realm       the realm to which the password portal should be added"
+  echo " -s | --server      the FreeIPA server"
+  echo " -t | --truststore  the output path for the generated java truststore"
   echo " -h | --help        show this helpful help message and exit"
   echo  
 }
@@ -34,23 +35,16 @@ usage()
 
 while [ "$2" != "" ]; do
   case $1 in
-    -r | --realm )          shift
+    -dn )                   shift
                             realm=$1
                             ;;
-    -s | --server )         shift
-                            server=$1
-                            ;;
-    -sp | --server-port )   shift
-                            server_port=$1
-                            ;;
-    -h | --hostname )       shift
+    -n | --hostname )       shift
                             host_name=$1
+                            ;;
+    --no-truststore )       no_truststore="true"
                             ;;
     -ip | --host-ip )       shift
                             host_ip=$1
-                            ;;
-    -t | --truststore )     shift
-                            truststore=$1
                             ;;
     -k | --keytab )         shift
                             keytab=$1
@@ -61,11 +55,20 @@ while [ "$2" != "" ]; do
     -krb | --krb5-conf )    shift
                             krb5_config=$1
                             ;;
-    -dn )                   shift
+    -r | --realm )          shift
                             realm=$1
                             ;;
+    -s | --server )         shift
+                            server=$1
+                            ;;
+    -sp | --server-port )   shift
+                            server_port=$1
+                            ;;
+    -t | --truststore )     shift
+                            truststore=$1
+                            ;;
     -h | --help )           usage
-                            exit 1
+                            exit 0
                             ;;
     * )                     usage
                             exit 1
@@ -75,7 +78,7 @@ done
 
 admin_pass="$1"
 
-[[ -z "$admin_pass" ]] && usage && exit $?
+[[ -z "$admin_pass" ]] && usage && exit 2
 
 echo "Performing kinit as admin..."
 echo 
@@ -135,7 +138,7 @@ echo "$admin_pass" | ldapmodify -h $server -x -W \
 script_prefix="."
 [[ ! -f create-freeipa-truststore.sh ]] && script_prefix="${BASH_SOURCE%/*}"
 
-bash "$script_prefix"/create-freeipa-truststore.sh -s $server -p $server_port -t $truststore --rm
+[[ "$no_truststore" != "true" ]] && bash "$script_prefix"/create-freeipa-truststore.sh -s $server -p $server_port -t $truststore --rm
 
 bash "$script_prefix"/create-krb5-conf.sh -s $server -p $kdc_port -r $realm -c $krb5_config
 

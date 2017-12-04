@@ -4,3 +4,4 @@
 .groovy
 /config/*
 !/config/application-dev.example.yml
+!/config/pw-portal.local.keystore
