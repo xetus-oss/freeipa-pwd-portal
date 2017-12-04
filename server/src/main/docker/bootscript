@@ -4,14 +4,16 @@
 # JVM-level configurations that need to be specified prior to starting 
 # the JVM; everything else should be configurable in the application.yml
 #
+JDK_KEYSTORE=$JAVA_HOME/jre/lib/security/cacerts
 keystore=/freeipa-pwd-portal/config/pw-portal.keystore
 keystore_pass="changeit"
 cert_alias="freeipa-pwd-portal"
 freeipa_cert=""
+debug_args=""
 
 usage() 
 {
-  echo "usage: docker run -d -v data:/freeipa-pwd-portal/config xetusoss/freeipa-pwd-portal [-ks keystore] [-kp keystore_pass] [-a cert_alias] [-fc freeipa_cert]"
+  echo "usage: docker run -d -v data:/freeipa-pwd-portal/config xetusoss/freeipa-pwd-portal-server [-ks keystore] [-kp keystore_pass] [-a cert_alias] [-fc freeipa_cert] [-d]"
   echo
   echo " -ks | --keystore        the container path for the keystore"
   echo "                         default: /freeipa-pwd-portal/config/pw-portal.keystore"
@@ -32,6 +34,8 @@ usage()
   echo "                         note: the certificate will be imported into the specified "
   echo "                         keystore if the cert is specified and found"
   echo
+  echo " -d | --debug            whether to enable JVM kerberos/spnego debug mode"
+  echo
   echo " -h | --help             show this help message and exit"
   echo  
 }
@@ -49,6 +53,9 @@ while [ "$1" != "" ]; do
                             ;;
     -fc | --freeipa-cert )  shift
                             freeipa_cert=$1
+                            ;;
+    -d | --debug )          shift
+                            debug_args="-Dsun.security.krb5.debug=true -Dsun.security.spnego.debug=true"
                             ;;
     -h | --help )           usage
                             exit 1
@@ -113,11 +120,19 @@ if [[ "$freeipa_cert" != "" && -e "$freeipa_cert" ]]; then
           -storepass "$keystore_pass"
 fi
 
+echo "Merging the supplied keystore ($keystore) into the JDK keystore at $JDK_KEYSTORE"
+keytool -importkeystore \
+        -srckeystore $keystore \
+        -destkeystore $JDK_KEYSTORE \
+        -srcstorepass $keystore_pass \
+        -deststorepass changeit \
+        -noprompt
+
 echo "Starting the Free IPA Password Portal..."
-java -jar server.jar \
-     -Xmx48m -XX:+UseSerialGC \
+java -Xmx48m -XX:+UseSerialGC \
      -Duser.timezone=UTC \
-     -Djavax.net.ssl.keyStore="$keystore" \
-     -Djavax.net.ssl.keyStorePassword="$keystore_pass" \
-     -Djavax.net.ssl.trustStore="$keystore" \
-     -Djavax.net.ssl.trustStorePassword="$keystore_pass"
+     -Djavax.net.ssl.keyStore="$JDK_KEYSTORE" \
+     -Djavax.net.ssl.keyStorePassword=changeit \
+     $debug_args \
+     -jar server.jar
+     
