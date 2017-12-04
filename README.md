@@ -48,6 +48,7 @@ the compose file uses `privileged=true` in order to run on mac osx.
                         -ip YOUR_HOST_IP \
                         --server-port 9443 \
                         --kdc-port 8888 \
+                        --no-truststore \
                         'testabc123'
    ```
    _Please see the [documentation for the configurer scripts](server/ipa-volume)

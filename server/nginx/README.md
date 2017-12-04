@@ -25,6 +25,31 @@ up a FreeIPA proxy makes sense:
 
 Executed from the root of the freeipa-pwd-portal project:
 
+```bash
+openssl genrsa -out server/nginx/nginx.key 2048
+openssl req -new -out server/nginx/nginx.csr \
+                 -key server/nginx/nginx.key \
+                 -config server/nginx/openssl.config
+
+#
+# respond to the prompts before proceeding!
+#
+
+openssl x509 -req -days 365 \
+                  -in server/nginx/nginx.csr \
+                  -signkey server/nginx/nginx.key \
+                  -out server/nginx/nginx.crt \
+                  -extensions v3_req \
+                  -extfile server/nginx/openssl.config
 ```
-openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout server/nginx/nginx.key -out server/nginx/nginx.crt
+
+## Creating a keystore with the certificate
+
+```bash
+keytool -import -alias freeipa \
+                -file server/nginx/nginx.crt \
+                -keystore server/config/pw-portal.local.keystore \
+                -storepass changeit \
+                -noprompt \
+                -trustcacerts
 ```

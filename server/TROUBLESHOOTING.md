@@ -64,3 +64,23 @@ ipa: ERROR: 500 Internal Server Error: KerberosWSGIExecutioner.__call__: KRB5CCN
 
 It most likely means that you don't have `forwardable=true` in your
 `krb5.conf` file. See https://pagure.io/freeipa/issue/4745.
+
+``Keytab authentication fails with "Pre-authentication information was invalid"``
+
+This most likely means the keytab is invalid. Test `kinit` with the keytab and
+verify the keytab is still valid; if not, generate a new keytab.
+
+``Keytab authentication fails with "KrbException: Server not found in Kerberos database (7) - LOOKING_UP_SERVER"``
+
+This most likely means the DNS name being used to resolve the FreeIPA instance
+does not match the hostname for the availale FreeIPA instance's HTTP service
+principal. You can either:
+
+1. Reconfigure the FreeIPA password portal to use the appropriate DNS name (if 
+   possible); or
+2. Add a service principal alias to the FreeIPA instance for it's HTTP service:
+
+    1. Login to the FreeIPA web UI using the admin account;
+    2. Navigate to the Services => `HTTP/freeipa.local.xetus.com@LOCAL.XETUS.COM` page; and
+    3. Add a principal alias, replacing `freeipa.local.xetus.com` with the 
+       DNS name you're using to resolve the FreeIPA instance.

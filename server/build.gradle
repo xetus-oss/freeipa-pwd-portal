@@ -61,7 +61,7 @@ bootRun {
     "-Dspring.profiles.active=dev",
     "-Dserver.port=8081",
     "-Duser.timezone=UTC",
-    "-Djavax.net.ssl.trustStore=" + file("config/pw-portal.keystore"),
+    "-Djavax.net.ssl.trustStore=" + file("config/pw-portal.local.keystore"),
     "-Djavax.net.ssl.trustStorePassword=changeit"
   ]
 }
