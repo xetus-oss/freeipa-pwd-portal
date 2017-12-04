@@ -30,6 +30,7 @@ allprojects {
     }
   }
   
+  project.ext.set('dockerGroup', 'xetusoss')
   group = 'com.xetus.oss.freeipa-pwd-portal'
   version = '1.0.0-SNAPSHOT'
   
