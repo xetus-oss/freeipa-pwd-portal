@@ -6,19 +6,25 @@ The UIa app and server for the FreeIPA Password Portal.
 
 ## Quick Start
 
-```bash
-npm install
-npm run dev
-```
+1. Install all the dependencies
+
+    ```bash
+    ./gradlew ui:setup
+    ```
+
+2. Run the app
+
+    ```bash
+    ./gradlew ui:run
+    ```
 
 ## Building
 
 ```bash
-npm install
-npm build
+./gradlew ui:build
 ```
 
-The distributable will be bundled into `dist/`.
+The distributable will be bundled into `ui/dist/`.
 
 ## Configuring
 
@@ -45,3 +51,9 @@ docker run --name portal-ui -d \
               --config-file ./config/dev.override.json \
               --config-file ./config/container-override.json 
 ```
+
+The convict and log4js configuration files should be mounted into the 
+container, and should be referenced with their appropriate container paths
+via the --config-file command line argument. Alternatively, you can specify
+all the configuration options via command line arguments or environment 
+variables.

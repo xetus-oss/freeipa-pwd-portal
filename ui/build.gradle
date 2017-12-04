@@ -5,6 +5,15 @@ node {
   version = "6.4.0"
   npmVersion = "3.10.3"
   npmCommand = "npm"
+
+  // Set the work directory for unpacking node
+  workDir = file("${project.projectDir}/.tools/node")
+
+  // Set the work directory for NPM
+  npmWorkDir = file("${project.projectDir}/.tools/npm")
+
+  // Set the work directory where node_modules should be located
+  nodeModulesDir = file("${project.projectDir}")
 }
 
 task clean() {
@@ -13,9 +22,10 @@ task clean() {
   delete 'build', 'dist'
 }
 
-task setup(dependsOn: ['nodeSetup', 'npmInstall']) {
+task setup(dependsOn: ['nodeSetup', 'npmInstall'], type: NpmTask) {
   group = "setup"
   description = "Downloads and installs a local versions of Node and NPM and installs all client dependencies"
+  args = ['install']
 }
 
 task run(type: NpmTask) {
